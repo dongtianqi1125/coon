@@ -25,6 +25,11 @@ public interface ZkTransporter {
 	void removeStateListener(StateListener listener);
 
 	void createData(String path, String json);
+	String getData(String path);
+	List<String> getChildrenData(String path);
+	// ===== Listener Path Data, 只监听子节点数据变更操作
+	void addDataListener(String path, DataListener listener);
+	void removeDataListener(String path, DataListener listener);
 
 	public interface ChildListener {
 		void childChanged(String path, List<String> children);

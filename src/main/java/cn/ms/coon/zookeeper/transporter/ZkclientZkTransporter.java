@@ -104,6 +104,15 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 	public void doClose() {
 		client.close();
 	}
+	
+	@Override
+	public String doGetChildrenData(String path) {
+		try {
+			return client.readData(path);
+        } catch (ZkNoNodeException e) {
+            return null;
+        }
+	}
 
 	@Override
 	public IZkChildListener createTargetChildListener(String path, final ChildListener listener) {

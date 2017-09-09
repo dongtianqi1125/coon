@@ -2,6 +2,7 @@ package cn.ms.coon;
 
 import java.util.List;
 
+import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.NSPI;
 
@@ -36,14 +37,16 @@ public interface Mconf extends Coon {
 
 	void connect(NURL nurl);
 
-	void publish(NURL nurl, Object obj);
+	void publish(Mcf mcf, Object obj);
 
-	void unpublish(NURL nurl, Object obj);
+	void unpublish(Mcf mcf, Object obj);
 
-	<T> void subscribe(NURL nurl, CoonListener<T> listener);
+	<T> void subscribe(Mcf mcf, Class<T> cls, CoonListener<T> listener);
 
-	<T> void unsubscribe(NURL nurl, CoonListener<T> listener);
+	<T> void unsubscribe(Mcf mcf, CoonListener<T> listener);
 
-	<T> List<T> lookup(NURL nurl);
+	<T> T lookup(Mcf mcf, Class<T> cls);
+	
+	<T> List<T> lookups(Mcf mcf, Class<T> cls);
 
 }

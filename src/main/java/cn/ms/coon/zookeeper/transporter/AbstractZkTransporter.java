@@ -1,5 +1,6 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +53,30 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 		} catch (Exception e) {
 		}		
 	}
+	
+	@Override
+	public List<String> getChildrenData(String path) {
+		List<String> childrenDatas = new ArrayList<String>();
+		
+		try {
+			List<String> childrens = this.getChildren(path);
+			for (String children:childrens) {
+				String json = doGetChildrenData(path + "/" + children);
+				if(json == null || json.length() < 1){
+					continue;
+				}
+				childrenDatas.add(json);
+			}
+		} catch (Exception e) {
+		}
+		
+		return childrenDatas;
+	}
+	
+	@Override
+	public String getData(String path) {
+		return doGetChildrenData(path);
+	}
 
 	@Override
 	public void addStateListener(StateListener listener) {
@@ -92,6 +117,7 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 			}
 		}
 	}
+	
 
 	protected void stateChanged(int state) {
 		for (StateListener sessionListener : getSessionListeners()) {
@@ -117,11 +143,9 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 	protected abstract void createEphemeral(String path);
 	protected abstract void doCreateData(String path, String json);
 	// ===== Listener Path Node
+	protected abstract String doGetChildrenData(String path);
 	protected abstract TargetChildListener createTargetChildListener(String path, ChildListener listener);
 	protected abstract List<String> addTargetChildListener(String path, TargetChildListener listener);
 	protected abstract void removeTargetChildListener(String path, TargetChildListener listener);
-	// ===== Listener Path Data, 只监听子节点数据变更操作
-	protected abstract void addDataListener(String path, DataListener listener);
-	protected abstract void removeDataListener(String path, DataListener listener);
 	
 }

@@ -122,6 +122,21 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	public void doClose() {
 		client.close();
 	}
+	
+	@Override
+	public String doGetChildrenData(String path) {
+		try {
+			byte[] data = client.getData().forPath(path);
+			if(data!=null){
+				return new String(data, "UTF-8");
+			}
+		} catch (NoNodeException e) {
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+		
+		return null;
+	}
 
 	private class CuratorWatcherImpl implements CuratorWatcher {
 
