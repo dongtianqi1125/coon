@@ -70,7 +70,7 @@ public class MregGovernor implements CoonListener<NURL> {
 		mreg = coonFactory.getMreg(url);
 
 		int connectTimeout = this.url.getParameter(Consts.CONNECT_TIMEOUT_KEY, 60000) / 1000;
-		while (!mreg.isAvailable() && connectTimeout-- > 0) {
+		while (!mreg.available() && connectTimeout-- > 0) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -78,7 +78,7 @@ public class MregGovernor implements CoonListener<NURL> {
 			}
 		}
 
-		if (mreg.isAvailable()) {
+		if (mreg.available()) {
 			logger.info("注册中心连接成功!!!");
 		} else {
 			logger.warn("注册中心连接失败!!!");
@@ -92,7 +92,7 @@ public class MregGovernor implements CoonListener<NURL> {
 			}
 		}, "SUBSCRIBE-MSUI-THREAD").start();
 
-		return mreg.isAvailable();
+		return mreg.available();
 	}
 
 	public void destroy() throws Exception {

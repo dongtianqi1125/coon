@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.NSPI;
 
 /**
  * The MicroService Configuration Center.<br>
@@ -31,19 +32,13 @@ import cn.ms.neural.NURL;
  * 
  * @author lry
  */
-public interface Mconf {
+@NSPI("zookeeper")
+public interface Mconf extends Coon {
 
 	/**
 	 * Connect configuration center
 	 */
 	void connect(NURL nurl);
-
-	/**
-	 * Configuration center status
-	 * 
-	 * @return
-	 */
-	boolean available();
 
 	/**
 	 * The Add Configuration Data.
@@ -107,7 +102,5 @@ public interface Mconf {
 	 * @param mcf
 	 */
 	void unpush(Mcf mcf);
-
-	void destroy();
 
 }

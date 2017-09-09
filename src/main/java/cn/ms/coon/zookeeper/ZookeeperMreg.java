@@ -58,7 +58,7 @@ public class ZookeeperMreg extends FailbackMreg {
     }
 
     @Override
-    public boolean isAvailable() {
+    public boolean available() {
         return transporter.isConnected();
     }
 

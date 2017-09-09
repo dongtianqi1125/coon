@@ -83,7 +83,7 @@ public class MregStatistics {
 				String server = mreg.getNurl().getAddress();
 				tempMap.put(SERVER_KEY, server);
 				tempMap.put(HOSTNAME_KEY, MregCommon.getHostName(server));
-				tempMap.put(AVAILABLE_KEY, mreg.isAvailable() ? AVAILABLE_CONNECTED_VAL : AVAILABLE_DISCONNECTED_VAL);
+				tempMap.put(AVAILABLE_KEY, mreg.available() ? AVAILABLE_CONNECTED_VAL : AVAILABLE_DISCONNECTED_VAL);
 
 				int registeredSize = 0;
 				int subscribedSize = 0;

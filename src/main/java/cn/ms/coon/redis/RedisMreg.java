@@ -50,7 +50,6 @@ public class RedisMreg extends FailbackMreg {
     private final ScheduledFuture<?> expireFuture;
     private final ScheduledExecutorService expireExecutor = Executors.newScheduledThreadPool(1, new NamedThreadFactory("RedisMregExpireTimer", true));
 
-    
     public RedisMreg(NURL nurl) {
         super(nurl);
         if (nurl.isAnyHost()) {
@@ -197,7 +196,7 @@ public class RedisMreg extends FailbackMreg {
     }
 
     @Override
-    public boolean isAvailable() {
+    public boolean available() {
         for (JedisPool jedisPool : jedisPools.values()) {
             Jedis jedis = jedisPool.getResource();
             try {

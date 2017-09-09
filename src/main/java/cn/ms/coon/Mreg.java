@@ -3,18 +3,16 @@ package cn.ms.coon;
 import java.util.List;
 
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.NSPI;
 
 /**
  * The MicroService Registry Center.
  * 
  * @author lry
  */
-public interface Mreg {
+@NSPI("zookeeper")
+public interface Mreg extends Coon {
 	
-    NURL getNurl();
-    
-    boolean isAvailable();
-
     /**
      * 注册数据，比如：提供者地址，消费者地址，路由规则，覆盖规则，等数据。
      * 
@@ -77,6 +75,4 @@ public interface Mreg {
      */
     List<NURL> lookup(NURL nurl);
 
-    void destroy();
-    
 }

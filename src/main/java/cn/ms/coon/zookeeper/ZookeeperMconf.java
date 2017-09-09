@@ -94,6 +94,12 @@ public class ZookeeperMconf extends AbstractMconf {
 	}
 
 	@Override
+	public NURL getNurl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public boolean available() {
 		return client.getZookeeperClient().isConnected();
 	}

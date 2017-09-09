@@ -69,6 +69,12 @@ public class RedisMconf extends AbstractMconf {
 
 		jedisPool = new JedisPool(config, url.getHost(), url.getPort());
 	}
+	
+	@Override
+	public NURL getNurl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public boolean available() {
