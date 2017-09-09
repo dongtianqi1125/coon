@@ -43,6 +43,15 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 			createPersistent(path);
 		}
 	}
+	
+	@Override
+	public void createData(String path, byte[] data) {
+		try {
+			this.create(path, false);
+			this.doCreateData(path, data);
+		} catch (Exception e) {
+		}		
+	}
 
 	@Override
 	public void addStateListener(StateListener listener) {
@@ -106,8 +115,13 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 	protected abstract void doClose();
 	protected abstract void createPersistent(String path);
 	protected abstract void createEphemeral(String path);
+	protected abstract void doCreateData(String path, byte[] data);
+	// ===== Listener Path Node
 	protected abstract TargetChildListener createTargetChildListener(String path, ChildListener listener);
 	protected abstract List<String> addTargetChildListener(String path, TargetChildListener listener);
 	protected abstract void removeTargetChildListener(String path, TargetChildListener listener);
-
+	// ===== Listener Path Data, 只监听子节点数据变更操作
+	protected abstract void addDataListener(String path, DataListener listener);
+	protected abstract void removeDataListener(String path, DataListener listener);
+	
 }

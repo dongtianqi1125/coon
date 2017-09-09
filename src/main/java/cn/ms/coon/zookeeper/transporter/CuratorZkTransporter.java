@@ -1,11 +1,19 @@
 package cn.ms.coon.zookeeper.transporter;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryNTimes;
@@ -17,6 +25,7 @@ import org.apache.zookeeper.WatchedEvent;
 import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;
+import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 @Extension("curator")
 public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> {
@@ -67,6 +76,16 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	public void createEphemeral(String path) {
 		try {
 			client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+		} catch (NodeExistsException e) {
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public void doCreateData(String path, byte[] data) {
+		try {
+			client.setData().forPath(path, data);
 		} catch (NodeExistsException e) {
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
@@ -144,5 +163,144 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	public void removeTargetChildListener(String path, CuratorWatcher listener) {
 		((CuratorWatcherImpl) listener).unwatch();
 	}
+	
+	private final Map<DataListener, PathChildrenCacheListener> dataListenerMap = new ConcurrentHashMap<DataListener, PathChildrenCacheListener>();
+	private final Map<String, PathChildrenCache> pathChildrenCacheMap = new ConcurrentHashMap<String, PathChildrenCache>();
+	private final Map<String, Set<DataListener>> dataListenersMap = new ConcurrentHashMap<String, Set<DataListener>>();
+	private final Map<String, Map<String, byte[]>> childDataMap = new ConcurrentHashMap<String, Map<String, byte[]>>();
+	
+	@Override
+	public void addDataListener(String path, DataListener listener) {
+		try {
+			// 第一步：获取-校验-创建监听器
+			PathChildrenCacheListener pathChildrenCacheListener = dataListenerMap.get(listener);
+			if(pathChildrenCacheListener != null){//已监听
+				return;
+			} else {
+				// 添加外部监听器
+				Set<DataListener> dataListenerSet = dataListenersMap.get(path);
+				if(dataListenerSet == null){
+					dataListenersMap.put(path, dataListenerSet = new ConcurrentHashSet<DataListener>());
+				}
+				dataListenerSet.add(listener);
+				dataListenerMap.put(listener, pathChildrenCacheListener = new PathChildrenCacheListenerImpl(path));
+			}
+			
+			// 第二步：获取-校验-创建子节点缓存连接
+			PathChildrenCache pathChildrenCache = pathChildrenCacheMap.get(path);
+			if(pathChildrenCache == null){
+				pathChildrenCacheMap.put(path, pathChildrenCache = new PathChildrenCache(client, path, true));
+				// 第三步：启动监听
+				pathChildrenCache.start(StartMode.POST_INITIALIZED_EVENT);
+			}
+			
+			// 第四步：添加监听器
+	        pathChildrenCache.getListenable().addListener(pathChildrenCacheListener);
+		} catch (Exception e) {
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public void removeDataListener(String path, DataListener listener) {
+		try {
+			// 第一步：移除dataListenerMap中的数据
+			PathChildrenCacheListener pathChildrenCacheListener = dataListenerMap.get(listener);
+			if(pathChildrenCacheListener == null){
+				return;
+			} else {
+				dataListenerMap.remove(listener);
+				
+				// 第二步：移除Set<DataListener>中的数据
+				Set<DataListener> dataListenerSet = dataListenersMap.get(path);
+				if(dataListenerSet != null && dataListenerSet.contains(listener)){
+					dataListenerSet.remove(listener);
+				}
 
+				// 第三步：移除dataListenersMap和childDataMap中的数据
+				if(dataListenerSet == null || dataListenerSet.isEmpty()){
+					dataListenersMap.remove(path);
+					childDataMap.remove(path);
+				}
+			}
+			
+			// 第四步：取消监听,并移除pathChildrenCacheMap中的数据
+			PathChildrenCache pathChildrenCache = pathChildrenCacheMap.get(path);
+			if(pathChildrenCache != null){
+				pathChildrenCache.getListenable().removeListener(pathChildrenCacheListener);
+				((PathChildrenCacheListenerImpl)listener).unwatch();
+				if(pathChildrenCache.getListenable().size() == 0){
+					pathChildrenCacheMap.remove(path);
+					pathChildrenCache.close();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+	
+	private class PathChildrenCacheListenerImpl implements PathChildrenCacheListener {
+		
+		private volatile String path;
+		private volatile Set<DataListener> dataListenerSet;
+		private volatile Map<String, byte[]> childrenDataMap;
+		private volatile boolean completeInit = false;
+		
+		public PathChildrenCacheListenerImpl(String path) {
+			this.path = path;
+			this.dataListenerSet =  dataListenersMap.get(path);
+			this.childrenDataMap = childDataMap.get(path);
+			if(childrenDataMap == null){
+				childDataMap.put(path, childrenDataMap = new ConcurrentHashMap<String, byte[]>());
+			}
+		}
+
+		public void unwatch() {
+			this.path = null;
+		}
+
+		@Override
+		public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+			if (path != null) {
+				if(event.getInitialData() != null){//判断当前是不是初始化通知
+					completeInit = true;
+					List<ChildData> childDatas = event.getInitialData();
+					if(childDatas != null && childDatas.size() > 0){
+						for (ChildData childData:childDatas) {
+							childrenDataMap.put(childData.getPath(), childData.getData());
+						}
+						this.doNotify();// 订阅后初始化成功,则进行第一次广播
+					}
+				} else {
+					if(!completeInit){// 没有初始化成功前,不进行变更通知操作
+						return;
+					}
+					ChildData data = event.getData();
+					if(data!=null){
+						switch (event.getType()) {  
+		                case CHILD_REMOVED:
+		                	childrenDataMap.remove(data.getPath());
+		                    break;
+		                default:
+		                	childrenDataMap.put(data.getPath(), data.getData());
+		                    break;  
+		                }
+						this.doNotify();// 每次数据变更,广播最新列表
+					}
+				}
+			}
+		}
+		
+		/**
+		 * 串联向外广播最新列表
+		 */
+		private void doNotify(){
+			if(dataListenerSet != null && dataListenerSet.size() > 0) {
+				for (DataListener dataListener: dataListenerSet) {
+					dataListener.dataChanged(path, childrenDataMap);
+				}						
+			}
+		}
+	}
+	
 }

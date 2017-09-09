@@ -12,13 +12,17 @@ public abstract class AbstractMconf implements Mconf {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMconf.class);
 
-	protected NURL url;
+	protected NURL nurl;
 	protected String ROOT;
 
 	@Override
-	public void connect(NURL url) {
-		this.url = url;
-		this.ROOT = url.getPath();
+	public void connect(NURL nurl) {
+		this.nurl = nurl;
+		this.ROOT = nurl.getPath();
+	}
+	@Override
+	public NURL getNurl() {
+		return nurl;
 	}
 
 	@SuppressWarnings("unchecked")

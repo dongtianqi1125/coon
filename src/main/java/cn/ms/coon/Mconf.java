@@ -2,7 +2,6 @@ package cn.ms.coon;
 
 import java.util.List;
 
-import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.NSPI;
 
@@ -35,72 +34,16 @@ import cn.ms.neural.extension.NSPI;
 @NSPI("zookeeper")
 public interface Mconf extends Coon {
 
-	/**
-	 * Connect configuration center
-	 */
 	void connect(NURL nurl);
 
-	/**
-	 * The Add Configuration Data.
-	 * 
-	 * @param mcf
-	 * @param obj
-	 */
-	void addConf(Mcf mcf, Object obj);
+	void publish(NURL nurl, Object obj);
 
-	/**
-	 * The Delete Configuration Data.<br>
-	 * <br>
-	 * Prompt：<br>
-	 * 1.Set parameter 'data'：Delete a data.<br>
-	 * 2.Not set parameter 'data'：Delete a conf.<br>
-	 * <br>
-	 * 
-	 * @param mcf
-	 */
-	void delConf(Mcf mcf);
+	void unpublish(NURL nurl, Object obj);
 
-	/**
-	 * The Update Configuration Data.
-	 * 
-	 * @param mcf
-	 * @param obj
-	 */
-	void upConf(Mcf mcf, Object obj);
+	<T> void subscribe(NURL nurl, CoonListener<T> listener);
 
-	/**
-	 * The Pull Configuration Data.
-	 * 
-	 * @param mcf
-	 * @param cls
-	 * @return
-	 */
-	<T> T pull(Mcf mcf, Class<T> cls);
+	<T> void unsubscribe(NURL nurl, CoonListener<T> listener);
 
-	/**
-	 * The Pulls Configuration Data.
-	 * 
-	 * @param mcf
-	 * @param cls
-	 * @return
-	 */
-	<T> List<T> pulls(Mcf mcf, Class<T> cls);
-
-	/**
-	 * The Push Configuration Data.
-	 * 
-	 * @param mcf
-	 * @param cls
-	 * @param listener
-	 * @return
-	 */
-	<T> void push(Mcf mcf, Class<T> cls, CoonListener<T> listener);
-
-	/**
-	 * The UnPush Configuration Data.
-	 * 
-	 * @param mcf
-	 */
-	void unpush(Mcf mcf);
+	<T> List<T> lookup(NURL nurl);
 
 }
