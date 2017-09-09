@@ -16,12 +16,12 @@ public class CuratorZkTransporterTest {
 			String path = "/mconf/gateway/router";
 			transporter.addDataListener(path, new DataListener() {
 				@Override
-				public void dataChanged(String path, Map<String, byte[]> childrenDatas) {
+				public void dataChanged(String path, Map<String, String> childrenDatas) {
 					System.out.println(path+"==>"+childrenDatas);
 				}
 			});
 			
-			transporter.createData(path+"/url1", "a123456789".getBytes());
+			transporter.createData(path+"/url2", "a123456789");
 			
 			Thread.sleep(5000);
 		} catch (Exception e) {

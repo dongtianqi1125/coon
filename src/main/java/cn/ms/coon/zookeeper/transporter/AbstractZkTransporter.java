@@ -45,10 +45,10 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 	}
 	
 	@Override
-	public void createData(String path, byte[] data) {
+	public void createData(String path, String json) {
 		try {
 			this.create(path, false);
-			this.doCreateData(path, data);
+			this.doCreateData(path, json);
 		} catch (Exception e) {
 		}		
 	}
@@ -115,7 +115,7 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 	protected abstract void doClose();
 	protected abstract void createPersistent(String path);
 	protected abstract void createEphemeral(String path);
-	protected abstract void doCreateData(String path, byte[] data);
+	protected abstract void doCreateData(String path, String json);
 	// ===== Listener Path Node
 	protected abstract TargetChildListener createTargetChildListener(String path, ChildListener listener);
 	protected abstract List<String> addTargetChildListener(String path, TargetChildListener listener);

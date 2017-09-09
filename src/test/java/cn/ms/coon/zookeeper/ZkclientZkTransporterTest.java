@@ -17,14 +17,14 @@ public class ZkclientZkTransporterTest {
 			String path = "/mconf/gateway/router";
 			transporter.addDataListener(path, new DataListener() {
 				@Override
-				public void dataChanged(String path, Map<String, byte[]> childrenDatas) {
+				public void dataChanged(String path, Map<String, String> childrenDatas) {
 					System.out.println(path+"==>"+childrenDatas);
 				}
 			});
 			
 			Thread.sleep(3000);
 			
-			transporter.createData(path, "a123456789222".getBytes());
+			transporter.createData(path, "a123456789222");
 			
 			Thread.sleep(5000);
 		} catch (Exception e) {

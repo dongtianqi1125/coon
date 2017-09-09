@@ -11,7 +11,6 @@ import org.I0Itec.zkclient.IZkStateListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
 import org.I0Itec.zkclient.exception.ZkNodeExistsException;
-import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 
 import cn.ms.coon.support.Consts;
@@ -31,8 +30,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 		client = new ZkClient(
                 url.getBackupAddress(),
                 url.getParameter(Consts.SESSION_TIMEOUT_KEY, Consts.DEFAULT_SESSION_TIMEOUT),
-                url.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT),
-                new SerializableSerializer());
+                url.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT));
 		
 		client.subscribeStateChanges(new IZkStateListener() {
 			@Override
@@ -73,9 +71,9 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 	}
 	
 	@Override
-	public void doCreateData(String path, byte[] data) {
+	public void doCreateData(String path, String json) {
 		try {
-			client.writeData(path, data);
+			client.writeData(path, json);
 		} catch (ZkNodeExistsException e) {
 		}
 	}
@@ -129,7 +127,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 	
 	private final Map<DataListener, IZkDataListener> dataListenerMap = new ConcurrentHashMap<DataListener, IZkDataListener>();
 	private final Map<String, Set<DataListener>> dataListenersMap = new ConcurrentHashMap<String, Set<DataListener>>();
-	private final Map<String, Map<String, byte[]>> childDataMap = new ConcurrentHashMap<String, Map<String, byte[]>>();
+	private final Map<String, Map<String, String>> childDataMap = new ConcurrentHashMap<String, Map<String, String>>();
 	
 	@Override
 	public void addDataListener(String path, DataListener listener) {
@@ -149,17 +147,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 			}
 			
 			// 第二步：启动监听
-			client.subscribeDataChanges(path, new IZkDataListener() {  
-	            @Override  
-	            public void handleDataChange(String s, Object o) throws Exception {  
-	                System.out.println("变更节点为：" + s + "，变更数据为：" + o);  
-	            }  
-	  
-	            @Override  
-	            public void handleDataDeleted(String s) throws Exception {  
-	                System.out.println("删除的节点为：" + s);  
-	            }  
-	        });
+			client.subscribeDataChanges(path, iZkDataListener);
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
@@ -199,27 +187,25 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 		
 		private volatile String path;
 		private volatile Set<DataListener> dataListenerSet;
-		private volatile Map<String, byte[]> childrenDataMap;
+		private volatile Map<String, String> childrenDataMap;
 		
 		public IZkDataListenerImpl(String path) {
 			this.path = path;
 			this.dataListenerSet =  dataListenersMap.get(path);
 			this.childrenDataMap = childDataMap.get(path);
 			if(childrenDataMap == null){
-				childDataMap.put(path, childrenDataMap = new ConcurrentHashMap<String, byte[]>());
+				childDataMap.put(path, childrenDataMap = new ConcurrentHashMap<String, String>());
 			}
 		}
 		
 		@Override
 		public void handleDataChange(String dataPath, Object data) throws Exception {
-			System.out.println("变更节点为：" + dataPath + "，变更数据为：" + data);  
-			childrenDataMap.put(dataPath, (byte[])data);
+			childrenDataMap.put(dataPath, (String)data);
 			this.doNotify();
 		}
 
 		@Override
 		public void handleDataDeleted(String dataPath) throws Exception {
-			System.out.println("删除的节点为：" +dataPath);  
 			childrenDataMap.remove(dataPath);
 			this.doNotify();
 		}

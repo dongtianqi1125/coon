@@ -83,9 +83,9 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	}
 	
 	@Override
-	public void doCreateData(String path, byte[] data) {
+	public void doCreateData(String path, String json) {
 		try {
-			client.setData().forPath(path, data);
+			client.setData().forPath(path, json.getBytes("UTF-8"));
 		} catch (NodeExistsException e) {
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
@@ -167,7 +167,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	private final Map<DataListener, PathChildrenCacheListener> dataListenerMap = new ConcurrentHashMap<DataListener, PathChildrenCacheListener>();
 	private final Map<String, PathChildrenCache> pathChildrenCacheMap = new ConcurrentHashMap<String, PathChildrenCache>();
 	private final Map<String, Set<DataListener>> dataListenersMap = new ConcurrentHashMap<String, Set<DataListener>>();
-	private final Map<String, Map<String, byte[]>> childDataMap = new ConcurrentHashMap<String, Map<String, byte[]>>();
+	private final Map<String, Map<String, String>> childDataMap = new ConcurrentHashMap<String, Map<String, String>>();
 	
 	@Override
 	public void addDataListener(String path, DataListener listener) {
@@ -243,7 +243,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 		
 		private volatile String path;
 		private volatile Set<DataListener> dataListenerSet;
-		private volatile Map<String, byte[]> childrenDataMap;
+		private volatile Map<String, String> childrenDataMap;
 		private volatile boolean completeInit = false;
 		
 		public PathChildrenCacheListenerImpl(String path) {
@@ -251,7 +251,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 			this.dataListenerSet =  dataListenersMap.get(path);
 			this.childrenDataMap = childDataMap.get(path);
 			if(childrenDataMap == null){
-				childDataMap.put(path, childrenDataMap = new ConcurrentHashMap<String, byte[]>());
+				childDataMap.put(path, childrenDataMap = new ConcurrentHashMap<String, String>());
 			}
 		}
 
@@ -267,7 +267,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 					List<ChildData> childDatas = event.getInitialData();
 					if(childDatas != null && childDatas.size() > 0){
 						for (ChildData childData:childDatas) {
-							childrenDataMap.put(childData.getPath(), childData.getData());
+							childrenDataMap.put(childData.getPath(), new String(childData.getData(), "UTF-8"));
 						}
 						this.doNotify();// 订阅后初始化成功,则进行第一次广播
 					}
@@ -282,7 +282,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 		                	childrenDataMap.remove(data.getPath());
 		                    break;
 		                default:
-		                	childrenDataMap.put(data.getPath(), data.getData());
+		                	childrenDataMap.put(data.getPath(), new String(data.getData(), "UTF-8"));
 		                    break;  
 		                }
 						this.doNotify();// 每次数据变更,广播最新列表

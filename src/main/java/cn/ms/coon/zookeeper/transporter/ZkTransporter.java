@@ -24,7 +24,7 @@ public interface ZkTransporter {
 	void addStateListener(StateListener listener);
 	void removeStateListener(StateListener listener);
 
-	void createData(String path, byte[] data);
+	void createData(String path, String json);
 
 	public interface ChildListener {
 		void childChanged(String path, List<String> children);
@@ -39,7 +39,7 @@ public interface ZkTransporter {
 	}
 	
 	public interface DataListener {
-		void dataChanged(String path, Map<String, byte[]> childrenDatas);
+		void dataChanged(String path, Map<String, String> childrenDatas);
 	}
 
 }
