@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.FailbackMreg;
 import cn.ms.coon.support.common.Consts;
 import cn.ms.coon.support.common.MregCommon;
@@ -28,7 +28,7 @@ public class ZookeeperMreg extends FailbackMreg {
     private final static String DEFAULT_ROOT = "ms";
     private final String root;
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
-    private final ConcurrentMap<NURL, ConcurrentMap<ServiceListener<NURL>, ChildListener>> zkListeners = new ConcurrentHashMap<NURL, ConcurrentMap<ServiceListener<NURL>, ChildListener>>();
+    private final ConcurrentMap<NURL, ConcurrentMap<CoonListener<NURL>, ChildListener>> zkListeners = new ConcurrentHashMap<NURL, ConcurrentMap<CoonListener<NURL>, ChildListener>>();
     private final ZkTransporter transporter;
     
     public ZookeeperMreg(NURL nurl, ZkTransporter transporter) {
@@ -91,13 +91,13 @@ public class ZookeeperMreg extends FailbackMreg {
     }
 
     @Override
-    protected void doSubscribe(final NURL nurl, final ServiceListener<NURL> listener) {
+    protected void doSubscribe(final NURL nurl, final CoonListener<NURL> listener) {
         try {
             if (Consts.ANY_VALUE.equals(nurl.getServiceInterface())) {
                 String root = this.toRootPath();
-                ConcurrentMap<ServiceListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
+                ConcurrentMap<CoonListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
                 if (listeners == null) {
-                    zkListeners.putIfAbsent(nurl, new ConcurrentHashMap<ServiceListener<NURL>, ChildListener>());
+                    zkListeners.putIfAbsent(nurl, new ConcurrentHashMap<CoonListener<NURL>, ChildListener>());
                     listeners = zkListeners.get(nurl);
                 }
                 ChildListener zkListener = listeners.get(listener);
@@ -127,9 +127,9 @@ public class ZookeeperMreg extends FailbackMreg {
             } else {
                 List<NURL> nurls = new ArrayList<NURL>();
                 for (String path : toCategoriesPath(nurl)) {
-                    ConcurrentMap<ServiceListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
+                    ConcurrentMap<CoonListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
                     if (listeners == null) {
-                        zkListeners.putIfAbsent(nurl, new ConcurrentHashMap<ServiceListener<NURL>, ChildListener>());
+                        zkListeners.putIfAbsent(nurl, new ConcurrentHashMap<CoonListener<NURL>, ChildListener>());
                         listeners = zkListeners.get(nurl);
                     }
                     ChildListener zkListener = listeners.get(listener);
@@ -155,8 +155,8 @@ public class ZookeeperMreg extends FailbackMreg {
     }
 
     @Override
-    protected void doUnsubscribe(NURL nurl, ServiceListener<NURL> listener) {
-        ConcurrentMap<ServiceListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
+    protected void doUnsubscribe(NURL nurl, CoonListener<NURL> listener) {
+        ConcurrentMap<CoonListener<NURL>, ChildListener> listeners = zkListeners.get(nurl);
         if (listeners != null) {
             ChildListener zkListener = listeners.get(listener);
             if (zkListener != null) {

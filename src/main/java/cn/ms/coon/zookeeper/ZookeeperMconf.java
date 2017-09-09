@@ -30,7 +30,7 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.AbstractMconf;
 import cn.ms.coon.support.common.Mcf;
 import cn.ms.neural.NURL;
@@ -52,7 +52,7 @@ public class ZookeeperMconf extends AbstractMconf {
 
 	private final ExecutorService pool = Executors.newFixedThreadPool(2);
 	@SuppressWarnings("rawtypes")
-	private final Map<String, Set<ServiceListener>> pushNotifyMap = new ConcurrentHashMap<String, Set<ServiceListener>>();
+	private final Map<String, Set<CoonListener>> pushNotifyMap = new ConcurrentHashMap<String, Set<CoonListener>>();
 	private final Map<String, Map<String, Object>> pushMap = new ConcurrentHashMap<String, Map<String, Object>>();
 	private final Map<String, PathChildrenCache> pathChildrenCacheMap = new ConcurrentHashMap<String, PathChildrenCache>();
 
@@ -250,16 +250,16 @@ public class ZookeeperMconf extends AbstractMconf {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <T> void push(final Mcf mcf, final Class<T> cls, final ServiceListener<T> notify) {
+	public <T> void push(final Mcf mcf, final Class<T> cls, final CoonListener<T> notify) {
 		final String path = mcf.buildRoot(super.url).getPrefixKey();
 		if (AbstractMconf.isBlank(path)) {
 			throw new RuntimeException("The PATH cannot be empty, path==" + path);
 		}
 
 		// 允许多个监听者监听同一个节点
-		Set<ServiceListener> notifies = pushNotifyMap.get(path);
+		Set<CoonListener> notifies = pushNotifyMap.get(path);
 		if (notifies == null) {
-			pushNotifyMap.put(path, notifies = new ConcurrentHashSet<ServiceListener>());
+			pushNotifyMap.put(path, notifies = new ConcurrentHashSet<CoonListener>());
 		}
 		notifies.add(notify);
 
@@ -302,8 +302,8 @@ public class ZookeeperMconf extends AbstractMconf {
 									if (isInit) {
 										logger.debug("The changed PATH[{}] update data[{}].", tempPath, tempJsonData);
 										logger.debug("The changed PATH[{}] notify all datas[{}].", path, JSON.toJSONString(tempMap));
-										Set<ServiceListener> tempNotifySet = pushNotifyMap.get(path);
-										for (ServiceListener tempNotify : tempNotifySet) {// 通知每一个监听器
+										Set<CoonListener> tempNotifySet = pushNotifyMap.get(path);
+										for (CoonListener tempNotify : tempNotifySet) {// 通知每一个监听器
 											List list = new ArrayList();
 											list.addAll(tempMap.values());
 											tempNotify.notify(list);

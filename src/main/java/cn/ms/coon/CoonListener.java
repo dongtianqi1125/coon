@@ -2,7 +2,7 @@ package cn.ms.coon;
 
 import java.util.List;
 
-public interface ServiceListener<T> {
+public interface CoonListener<T> {
 
     /**
      * 当收到服务变更通知时触发。

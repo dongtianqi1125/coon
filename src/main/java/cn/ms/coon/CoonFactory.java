@@ -4,7 +4,7 @@ import cn.ms.neural.NURL;
 import cn.ms.neural.extension.NSPI;
 
 @NSPI("zookeeper")
-public interface ServiceFactory {
+public interface CoonFactory {
 
     /**
      * 连接注册中心.

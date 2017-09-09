@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.AbstractMconf;
 import cn.ms.coon.support.common.Mcf;
 import cn.ms.coon.support.common.NamedThreadFactory;
@@ -43,7 +43,7 @@ public class RedisMconf extends AbstractMconf {
 
 	private final Map<String, Class<?>> pushClassMap = new ConcurrentHashMap<String, Class<?>>();
 	@SuppressWarnings("rawtypes")
-	private final ConcurrentMap<String, Set<ServiceListener>> pushNotifyMap = new ConcurrentHashMap<String, Set<ServiceListener>>();
+	private final ConcurrentMap<String, Set<CoonListener>> pushNotifyMap = new ConcurrentHashMap<String, Set<CoonListener>>();
 	private final ConcurrentMap<String, Map<String, String>> pushValueMap = new ConcurrentHashMap<String, Map<String, String>>();
 
 	@SuppressWarnings("unused")
@@ -164,7 +164,7 @@ public class RedisMconf extends AbstractMconf {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public <T> void push(Mcf mcf, Class<T> cls, ServiceListener<T> listener) {
+	public <T> void push(Mcf mcf, Class<T> cls, CoonListener<T> listener) {
 		if (isSubscribe) {
 			this.pushSubscribe();
 			isSubscribe = false;
@@ -178,9 +178,9 @@ public class RedisMconf extends AbstractMconf {
 				pushClassMap.put(key, cls);
 			}
 
-			Set<ServiceListener> notifies = pushNotifyMap.get(key);
+			Set<CoonListener> notifies = pushNotifyMap.get(key);
 			if (notifies == null) {
-				pushNotifyMap.put(key, notifies = new ConcurrentHashSet<ServiceListener>());
+				pushNotifyMap.put(key, notifies = new ConcurrentHashSet<CoonListener>());
 			}
 			notifies.add(listener);
 
@@ -246,12 +246,12 @@ public class RedisMconf extends AbstractMconf {
 							}
 							Map<String, String> oldMap = pushValueMap.get(entry.getKey());
 							if (!newMap.equals(oldMap)) {// 已变更
-								Set<ServiceListener> notifies = pushNotifyMap.get(entry.getKey());
+								Set<CoonListener> notifies = pushNotifyMap.get(entry.getKey());
 								if (notifies == null) {
 									continue;
 								} else {
 									pushValueMap.put(entry.getKey(), newMap);
-									for (ServiceListener notify : notifies) {
+									for (CoonListener notify : notifies) {
 										List list = new ArrayList();
 										for (Map.Entry<String, String> tempEntry : newMap.entrySet()) {
 											list.add(JSON.parseObject(tempEntry.getValue(), entry.getValue()));

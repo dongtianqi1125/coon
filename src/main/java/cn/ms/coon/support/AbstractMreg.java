@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.Mreg;
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.common.Consts;
 import cn.ms.coon.support.common.MregCommon;
 import cn.ms.coon.support.common.NamedThreadFactory;
@@ -52,7 +52,7 @@ public abstract class AbstractMreg implements Mreg {
     private final boolean syncSaveFile ;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<NURL> registered = new ConcurrentHashSet<NURL>();
-    private final ConcurrentMap<NURL, Set<ServiceListener<NURL>>> subscribed = new ConcurrentHashMap<NURL, Set<ServiceListener<NURL>>>();
+    private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> subscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
     private final ConcurrentMap<NURL, Map<String, List<NURL>>> notified = new ConcurrentHashMap<NURL, Map<String, List<NURL>>>();
 
     public AbstractMreg(NURL nurl) {
@@ -90,7 +90,7 @@ public abstract class AbstractMreg implements Mreg {
         return registered;
     }
 
-    public Map<NURL, Set<ServiceListener<NURL>>> getSubscribed() {
+    public Map<NURL, Set<CoonListener<NURL>>> getSubscribed() {
         return subscribed;
     }
 
@@ -247,7 +247,7 @@ public abstract class AbstractMreg implements Mreg {
             }
         } else {
             final AtomicReference<List<NURL>> reference = new AtomicReference<List<NURL>>();
-            ServiceListener<NURL> listener = new ServiceListener<NURL>() {
+            CoonListener<NURL> listener = new CoonListener<NURL>() {
                 public void notify(List<NURL> nurls) {
                     reference.set(nurls);
                 }
@@ -288,7 +288,7 @@ public abstract class AbstractMreg implements Mreg {
     }
 
     @Override
-    public void subscribe(NURL nurl, ServiceListener<NURL> listener) {
+    public void subscribe(NURL nurl, CoonListener<NURL> listener) {
         if (nurl == null) {
             throw new IllegalArgumentException("subscribe nurl == null");
         }
@@ -298,16 +298,16 @@ public abstract class AbstractMreg implements Mreg {
         if (logger.isInfoEnabled()){
             logger.info("Subscribe: " + nurl);
         }
-        Set<ServiceListener<NURL>> listeners = subscribed.get(nurl);
+        Set<CoonListener<NURL>> listeners = subscribed.get(nurl);
         if (listeners == null) {
-            subscribed.putIfAbsent(nurl, new ConcurrentHashSet<ServiceListener<NURL>>());
+            subscribed.putIfAbsent(nurl, new ConcurrentHashSet<CoonListener<NURL>>());
             listeners = subscribed.get(nurl);
         }
         listeners.add(listener);
     }
 
     @Override
-    public void unsubscribe(NURL nurl, ServiceListener<NURL> listener) {
+    public void unsubscribe(NURL nurl, CoonListener<NURL> listener) {
         if (nurl == null) {
             throw new IllegalArgumentException("unsubscribe nurl == null");
         }
@@ -317,7 +317,7 @@ public abstract class AbstractMreg implements Mreg {
         if (logger.isInfoEnabled()){
             logger.info("Unsubscribe: " + nurl);
         }
-        Set<ServiceListener<NURL>> listeners = subscribed.get(nurl);
+        Set<CoonListener<NURL>> listeners = subscribed.get(nurl);
         if (listeners != null) {
             listeners.remove(listener);
         }
@@ -335,14 +335,14 @@ public abstract class AbstractMreg implements Mreg {
             }
         }
         // subscribe
-        Map<NURL, Set<ServiceListener<NURL>>> recoverSubscribed = new HashMap<NURL, Set<ServiceListener<NURL>>>(getSubscribed());
+        Map<NURL, Set<CoonListener<NURL>>> recoverSubscribed = new HashMap<NURL, Set<CoonListener<NURL>>>(getSubscribed());
         if (! recoverSubscribed.isEmpty()) {
             if (logger.isInfoEnabled()) {
                 logger.info("Recover subscribe nurl " + recoverSubscribed.keySet());
             }
-            for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : recoverSubscribed.entrySet()) {
+            for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : recoverSubscribed.entrySet()) {
             	NURL nurl = entry.getKey();
-                for (ServiceListener<NURL> listener : entry.getValue()) {
+                for (CoonListener<NURL> listener : entry.getValue()) {
                     subscribe(nurl, listener);
                 }
             }
@@ -361,16 +361,16 @@ public abstract class AbstractMreg implements Mreg {
     protected void notify(List<NURL> nurls) {
         if(nurls == null || nurls.isEmpty()) return;
         
-        for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : getSubscribed().entrySet()) {
+        for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : getSubscribed().entrySet()) {
         	NURL nurl = entry.getKey();
             
             if(! MregCommon.isMatch(nurl, nurls.get(0))) {
                 continue;
             }
             
-            Set<ServiceListener<NURL>> listeners = entry.getValue();
+            Set<CoonListener<NURL>> listeners = entry.getValue();
             if (listeners != null) {
-                for (ServiceListener<NURL> listener : listeners) {
+                for (CoonListener<NURL> listener : listeners) {
                     try {
                         notify(nurl, listener, filterEmpty(nurl, nurls));
                     } catch (Throwable t) {
@@ -381,7 +381,7 @@ public abstract class AbstractMreg implements Mreg {
         }
     }
 
-    protected void notify(NURL nurl, ServiceListener<NURL> listener, List<NURL> nurls) {
+    protected void notify(NURL nurl, CoonListener<NURL> listener, List<NURL> nurls) {
         if (nurl == null) {
             throw new IllegalArgumentException("notify nurl == null");
         }
@@ -475,11 +475,11 @@ public abstract class AbstractMreg implements Mreg {
                 }
             }
         }
-        Map<NURL, Set<ServiceListener<NURL>>> destroySubscribed = new HashMap<NURL, Set<ServiceListener<NURL>>>(getSubscribed());
+        Map<NURL, Set<CoonListener<NURL>>> destroySubscribed = new HashMap<NURL, Set<CoonListener<NURL>>>(getSubscribed());
         if (! destroySubscribed.isEmpty()) {
-            for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : destroySubscribed.entrySet()) {
+            for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : destroySubscribed.entrySet()) {
             	NURL nurl = entry.getKey();
-                for (ServiceListener<NURL> listener : entry.getValue()) {
+                for (CoonListener<NURL> listener : entry.getValue()) {
                     try {
                         unsubscribe(nurl, listener);
                         if (logger.isInfoEnabled()) {

@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.Mreg;
-import cn.ms.coon.ServiceFactory;
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonFactory;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.common.Consts;
 import cn.ms.coon.support.common.MregCommon;
 import cn.ms.neural.NURL;
@@ -39,7 +39,7 @@ import cn.ms.neural.extension.ExtensionLoader;
  * 
  * @author lry
  */
-public class MregGovernor implements ServiceListener<NURL> {
+public class MregGovernor implements CoonListener<NURL> {
 
 	private static final Logger logger = LoggerFactory.getLogger(MregGovernor.class);
 
@@ -66,8 +66,8 @@ public class MregGovernor implements ServiceListener<NURL> {
 
 	public boolean start(NURL url) throws Exception {
 		this.url = url;
-		ServiceFactory serviceFactory = ExtensionLoader.getLoader(ServiceFactory.class).getExtension(this.url.getProtocol());
-		mreg = serviceFactory.getMreg(url);
+		CoonFactory coonFactory = ExtensionLoader.getLoader(CoonFactory.class).getExtension(this.url.getProtocol());
+		mreg = coonFactory.getMreg(url);
 
 		int connectTimeout = this.url.getParameter(Consts.CONNECT_TIMEOUT_KEY, 60000) / 1000;
 		while (!mreg.isAvailable() && connectTimeout-- > 0) {

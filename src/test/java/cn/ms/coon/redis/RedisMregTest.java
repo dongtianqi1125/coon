@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.redis.RedisMreg;
 import cn.ms.neural.NURL;
 
@@ -62,7 +62,7 @@ public class RedisMregTest {
 
     /**
      * Test method for
-     * {@link InjvmRegistry#subscribe(java.util.Map, ServiceListener)}
+     * {@link InjvmRegistry#subscribe(java.util.Map, CoonListener)}
      * .
      */
     @Test

@@ -55,7 +55,7 @@ public interface Mreg {
      * @param nurl 订阅条件，不允许为空，如：consumer://10.20.153.10/cn.ms.test.TestService?version=1.0.0&application=kylin
      * @param listener 变更事件监听器，不允许为空
      */
-    void subscribe(NURL nurl, ServiceListener<NURL> listener);
+    void subscribe(NURL nurl, CoonListener<NURL> listener);
 
     /**
      * 取消订阅.
@@ -67,7 +67,7 @@ public interface Mreg {
      * @param nurl 订阅条件，不允许为空，如：consumer://10.20.153.10/cn.ms.test.TestService?version=1.0.0&application=kylin
      * @param listener 变更事件监听器，不允许为空
      */
-    void unsubscribe(NURL nurl, ServiceListener<NURL> listener);
+    void unsubscribe(NURL nurl, CoonListener<NURL> listener);
 
     /**
      * 查询符合条件的已注册数据，与订阅的推模式相对应，这里为拉模式，只返回一次结果。

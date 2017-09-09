@@ -5,14 +5,14 @@ import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.Mconf;
 import cn.ms.coon.Mreg;
-import cn.ms.coon.support.AbstractMregFactory;
+import cn.ms.coon.support.AbstractCoonFactory;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;
 
 @Extension("redis")
-public class RedisServiceFactory extends AbstractMregFactory {
+public class RedisCoonFactory extends AbstractCoonFactory {
 
-	private final static Logger logger = LoggerFactory.getLogger(RedisServiceFactory.class);
+	private final static Logger logger = LoggerFactory.getLogger(RedisCoonFactory.class);
 	
 	@Override
 	public Mreg createMreg(NURL nurl) {

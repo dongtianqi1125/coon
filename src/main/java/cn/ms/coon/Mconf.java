@@ -99,7 +99,7 @@ public interface Mconf {
 	 * @param listener
 	 * @return
 	 */
-	<T> void push(Mcf mcf, Class<T> cls, ServiceListener<T> listener);
+	<T> void push(Mcf mcf, Class<T> cls, CoonListener<T> listener);
 
 	/**
 	 * The UnPush Configuration Data.

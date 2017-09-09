@@ -26,7 +26,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.FailbackMreg;
 import cn.ms.coon.support.common.Consts;
 import cn.ms.coon.support.common.MregCommon;
@@ -316,7 +316,7 @@ public class RedisMreg extends FailbackMreg {
     }
 
     @Override
-    public void doSubscribe(final NURL nurl, final ServiceListener<NURL> listener) {
+    public void doSubscribe(final NURL nurl, final CoonListener<NURL> listener) {
         String service = toServicePath(nurl);
         Notifier notifier = notifiers.get(service);
         if (notifier == null) {
@@ -378,16 +378,16 @@ public class RedisMreg extends FailbackMreg {
     }
 
     @Override
-    public void doUnsubscribe(NURL nurl, ServiceListener<NURL> listener) {
+    public void doUnsubscribe(NURL nurl, CoonListener<NURL> listener) {
     }
 
     private void doNotify(Jedis jedis, String key) {
-        for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : new HashMap<NURL, Set<ServiceListener<NURL>>>(getSubscribed()).entrySet()) {
-            doNotify(jedis, Arrays.asList(key), entry.getKey(), new HashSet<ServiceListener<NURL>>(entry.getValue()));
+        for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : new HashMap<NURL, Set<CoonListener<NURL>>>(getSubscribed()).entrySet()) {
+            doNotify(jedis, Arrays.asList(key), entry.getKey(), new HashSet<CoonListener<NURL>>(entry.getValue()));
         }
     }
 
-    private void doNotify(Jedis jedis, Collection<String> keys, NURL nurl, Collection<ServiceListener<NURL>> listeners) {
+    private void doNotify(Jedis jedis, Collection<String> keys, NURL nurl, Collection<CoonListener<NURL>> listeners) {
         if (keys == null || keys.size() == 0
                 || listeners == null || listeners.size() == 0) {
             return;
@@ -434,7 +434,7 @@ public class RedisMreg extends FailbackMreg {
         if (result == null || result.size() == 0) {
             return;
         }
-        for (ServiceListener<NURL> listener : listeners) {
+        for (CoonListener<NURL> listener : listeners) {
             notify(nurl, listener, result);
         }
     }

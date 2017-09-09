@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.ServiceListener;
+import cn.ms.coon.CoonListener;
 import cn.ms.coon.support.common.Consts;
 import cn.ms.coon.support.common.NamedThreadFactory;
 import cn.ms.coon.support.exception.SkipFailbackException;
@@ -33,9 +33,9 @@ public abstract class FailbackMreg extends AbstractMreg {
     private final ScheduledFuture<?> retryFuture;
     private final Set<NURL> failedRegistered = new ConcurrentHashSet<NURL>();
     private final Set<NURL> failedUnregistered = new ConcurrentHashSet<NURL>();
-    private final ConcurrentMap<NURL, Set<ServiceListener<NURL>>> failedSubscribed = new ConcurrentHashMap<NURL, Set<ServiceListener<NURL>>>();
-    private final ConcurrentMap<NURL, Set<ServiceListener<NURL>>> failedUnsubscribed = new ConcurrentHashMap<NURL, Set<ServiceListener<NURL>>>();
-    private final ConcurrentMap<NURL, Map<ServiceListener<NURL>, List<NURL>>> failedNotified = new ConcurrentHashMap<NURL, Map<ServiceListener<NURL>, List<NURL>>>();
+    private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> failedSubscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
+    private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> failedUnsubscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
+    private final ConcurrentMap<NURL, Map<CoonListener<NURL>, List<NURL>>> failedNotified = new ConcurrentHashMap<NURL, Map<CoonListener<NURL>, List<NURL>>>();
 
     public FailbackMreg(NURL url) {
         super(url);
@@ -63,29 +63,29 @@ public abstract class FailbackMreg extends AbstractMreg {
         return failedUnregistered;
     }
 
-    public Map<NURL, Set<ServiceListener<NURL>>> getFailedSubscribed() {
+    public Map<NURL, Set<CoonListener<NURL>>> getFailedSubscribed() {
         return failedSubscribed;
     }
 
-    public Map<NURL, Set<ServiceListener<NURL>>> getFailedUnsubscribed() {
+    public Map<NURL, Set<CoonListener<NURL>>> getFailedUnsubscribed() {
         return failedUnsubscribed;
     }
 
-    public Map<NURL, Map<ServiceListener<NURL>, List<NURL>>> getFailedNotified() {
+    public Map<NURL, Map<CoonListener<NURL>, List<NURL>>> getFailedNotified() {
         return failedNotified;
     }
 
-    private void addFailedSubscribed(NURL url, ServiceListener<NURL> listener) {
-        Set<ServiceListener<NURL>> listeners = failedSubscribed.get(url);
+    private void addFailedSubscribed(NURL url, CoonListener<NURL> listener) {
+        Set<CoonListener<NURL>> listeners = failedSubscribed.get(url);
         if (listeners == null) {
-            failedSubscribed.putIfAbsent(url, new ConcurrentHashSet<ServiceListener<NURL>>());
+            failedSubscribed.putIfAbsent(url, new ConcurrentHashSet<CoonListener<NURL>>());
             listeners = failedSubscribed.get(url);
         }
         listeners.add(listener);
     }
 
-    private void removeFailedSubscribed(NURL url, ServiceListener<NURL> listener) {
-        Set<ServiceListener<NURL>> listeners = failedSubscribed.get(url);
+    private void removeFailedSubscribed(NURL url, CoonListener<NURL> listener) {
+        Set<CoonListener<NURL>> listeners = failedSubscribed.get(url);
         if (listeners != null) {
             listeners.remove(listener);
         }
@@ -93,7 +93,7 @@ public abstract class FailbackMreg extends AbstractMreg {
         if (listeners != null) {
             listeners.remove(listener);
         }
-        Map<ServiceListener<NURL>, List<NURL>> notified = failedNotified.get(url);
+        Map<CoonListener<NURL>, List<NURL>> notified = failedNotified.get(url);
         if (notified != null) {
             notified.remove(listener);
         }
@@ -160,7 +160,7 @@ public abstract class FailbackMreg extends AbstractMreg {
     }
 
     @Override
-    public void subscribe(NURL url, ServiceListener<NURL> listener) {
+    public void subscribe(NURL url, CoonListener<NURL> listener) {
         super.subscribe(url, listener);
         removeFailedSubscribed(url, listener);
         try {
@@ -194,7 +194,7 @@ public abstract class FailbackMreg extends AbstractMreg {
     }
 
     @Override
-    public void unsubscribe(NURL url, ServiceListener<NURL> listener) {
+    public void unsubscribe(NURL url, CoonListener<NURL> listener) {
         super.unsubscribe(url, listener);
         removeFailedSubscribed(url, listener);
         try {
@@ -217,9 +217,9 @@ public abstract class FailbackMreg extends AbstractMreg {
             }
 
             // 将失败的取消订阅请求记录到失败列表，定时重试
-            Set<ServiceListener<NURL>> listeners = failedUnsubscribed.get(url);
+            Set<CoonListener<NURL>> listeners = failedUnsubscribed.get(url);
             if (listeners == null) {
-                failedUnsubscribed.putIfAbsent(url, new ConcurrentHashSet<ServiceListener<NURL>>());
+                failedUnsubscribed.putIfAbsent(url, new ConcurrentHashSet<CoonListener<NURL>>());
                 listeners = failedUnsubscribed.get(url);
             }
             listeners.add(listener);
@@ -227,7 +227,7 @@ public abstract class FailbackMreg extends AbstractMreg {
     }
 
     @Override
-    protected void notify(NURL url, ServiceListener<NURL> listener, List<NURL> urls) {
+    protected void notify(NURL url, CoonListener<NURL> listener, List<NURL> urls) {
         if (url == null) {
             throw new IllegalArgumentException("notify url == null");
         }
@@ -238,9 +238,9 @@ public abstract class FailbackMreg extends AbstractMreg {
         	doNotify(url, listener, urls);
         } catch (Exception t) {
             // 将失败的通知请求记录到失败列表，定时重试
-            Map<ServiceListener<NURL>, List<NURL>> listeners = failedNotified.get(url);
+            Map<CoonListener<NURL>, List<NURL>> listeners = failedNotified.get(url);
             if (listeners == null) {
-                failedNotified.putIfAbsent(url, new ConcurrentHashMap<ServiceListener<NURL>, List<NURL>>());
+                failedNotified.putIfAbsent(url, new ConcurrentHashMap<CoonListener<NURL>, List<NURL>>());
                 listeners = failedNotified.get(url);
             }
             listeners.put(listener, urls);
@@ -248,7 +248,7 @@ public abstract class FailbackMreg extends AbstractMreg {
         }
     }
     
-    protected void doNotify(NURL url, ServiceListener<NURL> listener, List<NURL> urls) {
+    protected void doNotify(NURL url, CoonListener<NURL> listener, List<NURL> urls) {
     	super.notify(url, listener, urls);
     }
     
@@ -265,14 +265,14 @@ public abstract class FailbackMreg extends AbstractMreg {
             }
         }
         // subscribe
-        Map<NURL, Set<ServiceListener<NURL>>> recoverSubscribed = new HashMap<NURL, Set<ServiceListener<NURL>>>(getSubscribed());
+        Map<NURL, Set<CoonListener<NURL>>> recoverSubscribed = new HashMap<NURL, Set<CoonListener<NURL>>>(getSubscribed());
         if (! recoverSubscribed.isEmpty()) {
             if (logger.isInfoEnabled()) {
                 logger.info("Recover subscribe url " + recoverSubscribed.keySet());
             }
-            for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : recoverSubscribed.entrySet()) {
+            for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : recoverSubscribed.entrySet()) {
             	NURL url = entry.getKey();
-                for (ServiceListener<NURL> listener : entry.getValue()) {
+                for (CoonListener<NURL> listener : entry.getValue()) {
                     addFailedSubscribed(url, listener);
                 }
             }
@@ -322,8 +322,8 @@ public abstract class FailbackMreg extends AbstractMreg {
             }
         }
         if (! failedSubscribed.isEmpty()) {
-            Map<NURL, Set<ServiceListener<NURL>>> failed = new HashMap<NURL, Set<ServiceListener<NURL>>>(failedSubscribed);
-            for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : new HashMap<NURL, Set<ServiceListener<NURL>>>(failed).entrySet()) {
+            Map<NURL, Set<CoonListener<NURL>>> failed = new HashMap<NURL, Set<CoonListener<NURL>>>(failedSubscribed);
+            for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : new HashMap<NURL, Set<CoonListener<NURL>>>(failed).entrySet()) {
                 if (entry.getValue() == null || entry.getValue().size() == 0) {
                     failed.remove(entry.getKey());
                 }
@@ -333,10 +333,10 @@ public abstract class FailbackMreg extends AbstractMreg {
                     logger.info("Retry subscribe " + failed);
                 }
                 try {
-                    for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : failed.entrySet()) {
+                    for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : failed.entrySet()) {
                     	NURL url = entry.getKey();
-                        Set<ServiceListener<NURL>> listeners = entry.getValue();
-                        for (ServiceListener<NURL> listener : listeners) {
+                        Set<CoonListener<NURL>> listeners = entry.getValue();
+                        for (CoonListener<NURL> listener : listeners) {
                             try {
                                 doSubscribe(url, listener);
                                 listeners.remove(listener);
@@ -351,8 +351,8 @@ public abstract class FailbackMreg extends AbstractMreg {
             }
         }
         if (! failedUnsubscribed.isEmpty()) {
-            Map<NURL, Set<ServiceListener<NURL>>> failed = new HashMap<NURL, Set<ServiceListener<NURL>>>(failedUnsubscribed);
-            for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : new HashMap<NURL, Set<ServiceListener<NURL>>>(failed).entrySet()) {
+            Map<NURL, Set<CoonListener<NURL>>> failed = new HashMap<NURL, Set<CoonListener<NURL>>>(failedUnsubscribed);
+            for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : new HashMap<NURL, Set<CoonListener<NURL>>>(failed).entrySet()) {
                 if (entry.getValue() == null || entry.getValue().size() == 0) {
                     failed.remove(entry.getKey());
                 }
@@ -362,10 +362,10 @@ public abstract class FailbackMreg extends AbstractMreg {
                     logger.info("Retry unsubscribe " + failed);
                 }
                 try {
-                    for (Map.Entry<NURL, Set<ServiceListener<NURL>>> entry : failed.entrySet()) {
+                    for (Map.Entry<NURL, Set<CoonListener<NURL>>> entry : failed.entrySet()) {
                     	NURL url = entry.getKey();
-                        Set<ServiceListener<NURL>> listeners = entry.getValue();
-                        for (ServiceListener<NURL> listener : listeners) {
+                        Set<CoonListener<NURL>> listeners = entry.getValue();
+                        for (CoonListener<NURL> listener : listeners) {
                             try {
                                 doUnsubscribe(url, listener);
                                 listeners.remove(listener);
@@ -380,8 +380,8 @@ public abstract class FailbackMreg extends AbstractMreg {
             }
         }
         if (! failedNotified.isEmpty()) {
-            Map<NURL, Map<ServiceListener<NURL>, List<NURL>>> failed = new HashMap<NURL, Map<ServiceListener<NURL>, List<NURL>>>(failedNotified);
-            for (Map.Entry<NURL, Map<ServiceListener<NURL>, List<NURL>>> entry : new HashMap<NURL, Map<ServiceListener<NURL>, List<NURL>>>(failed).entrySet()) {
+            Map<NURL, Map<CoonListener<NURL>, List<NURL>>> failed = new HashMap<NURL, Map<CoonListener<NURL>, List<NURL>>>(failedNotified);
+            for (Map.Entry<NURL, Map<CoonListener<NURL>, List<NURL>>> entry : new HashMap<NURL, Map<CoonListener<NURL>, List<NURL>>>(failed).entrySet()) {
                 if (entry.getValue() == null || entry.getValue().size() == 0) {
                     failed.remove(entry.getKey());
                 }
@@ -391,10 +391,10 @@ public abstract class FailbackMreg extends AbstractMreg {
                     logger.info("Retry notify " + failed);
                 }
                 try {
-                    for (Map<ServiceListener<NURL>, List<NURL>> values : failed.values()) {
-                        for (Map.Entry<ServiceListener<NURL>, List<NURL>> entry : values.entrySet()) {
+                    for (Map<CoonListener<NURL>, List<NURL>> values : failed.values()) {
+                        for (Map.Entry<CoonListener<NURL>, List<NURL>> entry : values.entrySet()) {
                             try {
-                                ServiceListener<NURL> listener = entry.getKey();
+                                CoonListener<NURL> listener = entry.getKey();
                                 List<NURL> urls = entry.getValue();
                                 listener.notify(urls);
                                 values.remove(listener);
@@ -423,7 +423,7 @@ public abstract class FailbackMreg extends AbstractMreg {
     // ==== 模板方法 ====
     protected abstract void doRegister(NURL url);
     protected abstract void doUnregister(NURL url);
-    protected abstract void doSubscribe(NURL url, ServiceListener<NURL> listener);
-    protected abstract void doUnsubscribe(NURL url, ServiceListener<NURL> listener);
+    protected abstract void doSubscribe(NURL url, CoonListener<NURL> listener);
+    protected abstract void doUnsubscribe(NURL url, CoonListener<NURL> listener);
 
 }
