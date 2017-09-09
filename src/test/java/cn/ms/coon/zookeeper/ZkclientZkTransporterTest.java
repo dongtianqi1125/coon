@@ -22,9 +22,11 @@ public class ZkclientZkTransporterTest {
 				}
 			});
 			
-			Thread.sleep(3000);
+			transporter.createData(path+"/url1", "a123456789222");
 			
-			transporter.createData(path, "a123456789222");
+			Thread.sleep(1000);
+			
+			transporter.createData(path+"/"+System.currentTimeMillis(), "a123456789222");
 			
 			Thread.sleep(5000);
 		} catch (Exception e) {

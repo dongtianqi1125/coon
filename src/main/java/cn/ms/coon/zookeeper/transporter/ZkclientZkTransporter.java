@@ -129,12 +129,86 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 	private final Map<String, Set<DataListener>> dataListenersMap = new ConcurrentHashMap<String, Set<DataListener>>();
 	private final Map<String, Map<String, String>> childDataMap = new ConcurrentHashMap<String, Map<String, String>>();
 	
+	private final Map<String, IZkChildListener> iZkChildListenerMap = new ConcurrentHashMap<String, IZkChildListener>();
+	private final Map<String, Set<String>> memoryChildrenMap = new ConcurrentHashMap<String, Set<String>>();
+	
 	@Override
-	public void addDataListener(String path, DataListener listener) {
+	public void addDataListener(final String path, final DataListener listener) {
+		IZkChildListener iZkChildListener = iZkChildListenerMap.get(path);
+		if(iZkChildListener != null){
+			return;
+		} else {
+			iZkChildListenerMap.put(path, iZkChildListener = new IZkChildListener() {
+				@Override
+				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+					if(currentChilds != null){
+						for (int i = 0; i < currentChilds.size(); i++) {
+							currentChilds.set(i, path + "/" + currentChilds.get(i));
+						}
+						System.out.println("1最新子节点列表："+currentChilds);
+						doSubscribeChildrens(path, currentChilds);
+					}
+				}
+			});
+			
+			// 订阅当前节点下的所有子节点
+			client.subscribeChildChanges(path, iZkChildListener);
+			// 订阅后通过查找的方式来完成第一次广播动作
+			List<String> childrens = client.getChildren(path);
+			for (int i = 0; i < childrens.size(); i++) {
+				childrens.set(i, path + "/" + childrens.get(i));
+			}
+			System.out.println("2最新子节点列表：" + childrens);
+			this.doSubscribeChildrens(path, childrens);
+			
+		}
+	}
+	
+	private void doSubscribeChildrens(String path, List<String> childrens) {
+		Set<String> tempNewChildrenSet = new ConcurrentHashSet<String>();
+		if(childrens!=null){
+			if(!childrens.isEmpty()){
+				tempNewChildrenSet.addAll(childrens);
+			}
+		}
+		System.out.println("1---->"+tempNewChildrenSet);
+		
+		Set<String> memoryChildrenSet = memoryChildrenMap.get(path);
+		if(memoryChildrenSet == null){
+			memoryChildrenMap.put(path, memoryChildrenSet = new ConcurrentHashSet<String>());
+		}
+		
+		Set<String> tempMemoryChildrenSet = new ConcurrentHashSet<String>();
+		if(!memoryChildrenSet.isEmpty()){
+			tempMemoryChildrenSet.addAll(memoryChildrenSet);
+		}
+		System.out.println("2---->"+tempMemoryChildrenSet);
+		
+		// 需要订阅的子节点=最新节点列表-内存节点列表
+		if(!tempMemoryChildrenSet.isEmpty()){
+			tempNewChildrenSet.removeAll(tempMemoryChildrenSet);
+		}
+		System.out.println("3---->"+tempNewChildrenSet);
+		
+		// 需要取消订阅的子节点=内存节点列表-最新节点列表
+		if(childrens!=null){
+			if(!childrens.isEmpty()){
+				tempMemoryChildrenSet.removeAll(childrens);
+			}
+		}
+		System.out.println("4---->"+tempMemoryChildrenSet);
+	}
+	
+	@Override
+	public void removeDataListener(String path, DataListener listener) {
+		
+	}
+	
+	public void doAddDataListener(String path, DataListener listener) {
 		try {
 			// 第一步：获取-校验-创建监听器
 			IZkDataListener iZkDataListener = dataListenerMap.get(listener);
-			if(iZkDataListener != null){//已监听
+			if(iZkDataListener != null){// 已监听
 				return;
 			} else {
 				// 添加外部监听器
@@ -153,8 +227,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 		}
 	}
 	
-	@Override
-	public void removeDataListener(String path, DataListener listener) {
+	public void doRemoveDataListener(String path, DataListener listener) {
 		try {
 			// 第一步：移除dataListenerMap中的数据
 			IZkDataListener iZkDataListener = dataListenerMap.get(listener);

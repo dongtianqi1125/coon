@@ -21,7 +21,7 @@ public class CuratorZkTransporterTest {
 				}
 			});
 			
-			transporter.createData(path+"/url2", "a123456789");
+			transporter.createData(path+"/url1", "a123456789");
 			
 			Thread.sleep(5000);
 		} catch (Exception e) {
