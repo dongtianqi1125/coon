@@ -9,10 +9,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.ms.coon.CoonFactory;
 import cn.ms.coon.Mconf;
 import cn.ms.coon.Mreg;
-import cn.ms.coon.CoonFactory;
-import cn.ms.coon.support.common.Consts;
 import cn.ms.neural.NURL;
 
 public abstract class AbstractCoonFactory implements CoonFactory {

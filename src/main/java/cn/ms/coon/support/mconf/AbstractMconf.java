@@ -1,4 +1,4 @@
-package cn.ms.coon.support;
+package cn.ms.coon.support.mconf;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package cn.ms.coon.support.governor;
+package cn.ms.coon.support.mreg.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.ms.coon.Mreg;
-import cn.ms.coon.support.AbstractMreg;
 import cn.ms.coon.support.AbstractCoonFactory;
-import cn.ms.coon.support.common.MregCommon;
+import cn.ms.coon.support.mreg.AbstractMreg;
+import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.neural.NURL;
 
 /**

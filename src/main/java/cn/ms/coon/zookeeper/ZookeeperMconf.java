@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.CoonListener;
-import cn.ms.coon.support.AbstractMconf;
-import cn.ms.coon.support.common.Mcf;
+import cn.ms.coon.support.mconf.AbstractMconf;
+import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 

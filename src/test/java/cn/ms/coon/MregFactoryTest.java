@@ -3,7 +3,6 @@ package cn.ms.coon;
 import org.junit.Assert;
 import org.junit.Test;
 
-import cn.ms.coon.CoonFactory;
 import cn.ms.coon.redis.RedisCoonFactory;
 import cn.ms.coon.zookeeper.ZookeeperCoonFactory;
 import cn.ms.neural.extension.ExtensionLoader;

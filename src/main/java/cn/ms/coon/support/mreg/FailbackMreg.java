@@ -1,4 +1,4 @@
-package cn.ms.coon.support;
+package cn.ms.coon.support.mreg;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.CoonListener;
-import cn.ms.coon.support.common.Consts;
-import cn.ms.coon.support.common.NamedThreadFactory;
-import cn.ms.coon.support.exception.SkipFailbackException;
+import cn.ms.coon.support.Consts;
+import cn.ms.coon.support.NamedThreadFactory;
+import cn.ms.coon.support.mreg.exception.SkipFailbackException;
 import cn.ms.neural.NURL;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 

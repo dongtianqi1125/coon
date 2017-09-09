@@ -14,7 +14,7 @@ import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.WatchedEvent;
 
-import cn.ms.coon.support.common.Consts;
+import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;
 

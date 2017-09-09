@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.CoonListener;
-import cn.ms.coon.support.FailbackMreg;
-import cn.ms.coon.support.common.Consts;
-import cn.ms.coon.support.common.MregCommon;
-import cn.ms.coon.support.exception.MregException;
+import cn.ms.coon.support.Consts;
+import cn.ms.coon.support.mreg.FailbackMreg;
+import cn.ms.coon.support.mreg.MregCommon;
+import cn.ms.coon.support.mreg.exception.MregException;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.ChildListener;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.StateListener;

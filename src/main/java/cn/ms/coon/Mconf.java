@@ -2,7 +2,7 @@ package cn.ms.coon;
 
 import java.util.List;
 
-import cn.ms.coon.support.common.Mcf;
+import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
 
 /**

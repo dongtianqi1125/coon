@@ -1,4 +1,4 @@
-package cn.ms.coon.support.common;
+package cn.ms.coon.support.mconf;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.ms.coon.support.AbstractMconf;
 import cn.ms.neural.NURL;
 
 public class Mcf {

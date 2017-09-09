@@ -3,7 +3,7 @@ package cn.ms.coon.governor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import cn.ms.coon.support.governor.MregGovernor;
+import cn.ms.coon.support.mreg.monitor.MregGovernor;
 import cn.ms.neural.NURL;
 
 import com.alibaba.fastjson.JSON;

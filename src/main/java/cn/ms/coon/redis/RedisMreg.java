@@ -27,11 +27,11 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import cn.ms.coon.CoonListener;
-import cn.ms.coon.support.FailbackMreg;
-import cn.ms.coon.support.common.Consts;
-import cn.ms.coon.support.common.MregCommon;
-import cn.ms.coon.support.common.NamedThreadFactory;
-import cn.ms.coon.support.exception.MregException;
+import cn.ms.coon.support.Consts;
+import cn.ms.coon.support.NamedThreadFactory;
+import cn.ms.coon.support.mreg.FailbackMreg;
+import cn.ms.coon.support.mreg.MregCommon;
+import cn.ms.coon.support.mreg.exception.MregException;
 import cn.ms.neural.NURL;
 
 public class RedisMreg extends FailbackMreg {

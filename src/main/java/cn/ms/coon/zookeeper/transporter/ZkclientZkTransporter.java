@@ -9,7 +9,7 @@ import org.I0Itec.zkclient.exception.ZkNoNodeException;
 import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 
-import cn.ms.coon.support.common.Consts;
+import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;
 

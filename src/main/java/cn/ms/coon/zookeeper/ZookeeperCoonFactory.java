@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import cn.ms.coon.Mconf;
 import cn.ms.coon.Mreg;
 import cn.ms.coon.support.AbstractCoonFactory;
-import cn.ms.coon.support.common.Consts;
+import cn.ms.coon.support.Consts;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;

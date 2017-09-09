@@ -1,4 +1,4 @@
-package cn.ms.coon.support.exception;
+package cn.ms.coon.support.mreg.exception;
 
 /**
  * 注册中心异常

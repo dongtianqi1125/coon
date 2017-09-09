@@ -1,4 +1,4 @@
-package cn.ms.coon.support.common;
+package cn.ms.coon.support;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

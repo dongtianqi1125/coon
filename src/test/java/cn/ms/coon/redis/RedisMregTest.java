@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cn.ms.coon.CoonListener;
-import cn.ms.coon.redis.RedisMreg;
 import cn.ms.neural.NURL;
 
 /**

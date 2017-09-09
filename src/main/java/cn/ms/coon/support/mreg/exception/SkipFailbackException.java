@@ -1,6 +1,7 @@
-package cn.ms.coon.support.exception;
+package cn.ms.coon.support.mreg.exception;
 
-import cn.ms.coon.support.FailbackMreg;
+import cn.ms.coon.support.mreg.FailbackMreg;
+
 
 /**
  * Wrapper异常，用于指示 {@link FailbackMreg}跳过Failback。
