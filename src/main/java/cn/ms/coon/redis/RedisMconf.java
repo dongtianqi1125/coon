@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import cn.ms.coon.CoonListener;
+import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.coon.support.mconf.AbstractMconf;
 import cn.ms.coon.support.mconf.Mcf;

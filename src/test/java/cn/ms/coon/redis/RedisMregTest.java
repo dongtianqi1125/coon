@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import cn.ms.coon.CoonListener;
+import cn.ms.coon.support.CoonListener;
 import cn.ms.neural.NURL;
 
 /**

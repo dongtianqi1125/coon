@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.CoonFactory;
-import cn.ms.coon.CoonListener;
 import cn.ms.coon.Mreg;
 import cn.ms.coon.support.Consts;
+import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.ExtensionLoader;

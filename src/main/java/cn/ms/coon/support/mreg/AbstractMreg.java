@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.CoonListener;
 import cn.ms.coon.Mreg;
 import cn.ms.coon.support.Consts;
+import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.neural.NURL;
 import cn.ms.neural.util.micro.ConcurrentHashSet;

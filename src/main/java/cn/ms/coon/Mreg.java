@@ -2,6 +2,7 @@ package cn.ms.coon;
 
 import java.util.List;
 
+import cn.ms.coon.support.CoonListener;
 import cn.ms.neural.NURL;
 import cn.ms.neural.extension.NSPI;
 
