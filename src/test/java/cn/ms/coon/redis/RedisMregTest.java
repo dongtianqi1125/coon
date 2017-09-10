@@ -23,8 +23,12 @@ public class RedisMregTest {
     NURL               registryUrl = NURL.valueOf("redis://a:testpass@127.0.0.1:6379/");
     NURL               serviceUrl  = NURL.valueOf("redis://redis/" + service + "?notify=false&methods=test1,test2");
     NURL               consumerUrl = NURL.valueOf("redis://consumer/" + service + "?notify=false&methods=test1,test2");
-    RedisMreg registry    = new RedisMreg(registryUrl);
-
+    RedisMreg registry    = new RedisMreg();
+    
+    public RedisMregTest() {
+    	registry.connect(registryUrl);
+	}
+    
     /**
      * @throws java.lang.Exception
      */

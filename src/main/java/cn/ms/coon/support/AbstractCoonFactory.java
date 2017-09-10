@@ -1,7 +1,9 @@
 package cn.ms.coon.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -9,8 +11,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.ms.coon.Coon;
 import cn.ms.coon.CoonFactory;
 import cn.ms.coon.Mconf;
+import cn.ms.coon.Mlock;
 import cn.ms.coon.Mreg;
 import cn.ms.neural.NURL;
 
@@ -18,113 +22,83 @@ public abstract class AbstractCoonFactory implements CoonFactory {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCoonFactory.class);
 
-    // 注册中心获取过程锁
-    private static final ReentrantLock LOCK = new ReentrantLock();
-    // 注册中心集合 Map<MregAddress, Mreg>
-    private static final Map<String, Mreg> MREGS = new ConcurrentHashMap<String, Mreg>();
-    private static final Map<String, Mconf> MCONFS = new ConcurrentHashMap<String, Mconf>();
+	// 服务获取过程锁
+	private static final ReentrantLock LOCK = new ReentrantLock();
+	// 服务集合 Map<CoonAddress, Coon>
+	private static final Map<String, Coon> COON_MAP = new ConcurrentHashMap<String, Coon>();
 
-    public static Collection<Mreg> getMregs() {
-        return Collections.unmodifiableCollection(MREGS.values());
-    }
-    
-    public static Collection<Mconf> getMconfs() {
-        return Collections.unmodifiableCollection(MCONFS.values());
-    }
+	public static <T> Collection<Coon> getCoons() {
+		return Collections.unmodifiableCollection(COON_MAP.values());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> getCoons(Class<T> cls) {
+		List<T> list = new ArrayList<T>();
+		for (Coon coon:COON_MAP.values()) {
+			if(coon.getClass().getName().equals(cls.getName())){
+				list.add((T)coon);
+			}
+		}
+		return list;
+	}
 
-    @Override
-    public Mreg getMreg(NURL nurl) {
-    	nurl = nurl.setPath(Mreg.class.getName()).addParameter(Consts.INTERFACE_KEY, Mreg.class.getName());
-    	String key = nurl.toServiceString();
-    	
-        // 锁定注册中心获取过程，保证注册中心单一实例
-        LOCK.lock();
-        try {
-            Mreg mreg = MREGS.get(key);
-            if (mreg != null) {
-                return mreg;
-            }
-            mreg = createMreg(nurl);
-            if (mreg == null) {
-                throw new IllegalStateException("Can not create mreg " + nurl);
-            }
-            MREGS.put(key, mreg);
-            return mreg;
-        } finally {
-            // 释放锁
-            LOCK.unlock();
-        }
-    }
-    
-    public static void destroyMregAll() {
-        if (logger.isInfoEnabled()) {
-        	logger.info("Close all registries " + getMregs());
-        }
-        
-        // 锁定注册中心关闭过程
-        LOCK.lock();
-        try {
-            for (Mreg mreg : getMregs()) {
-                try {
-                    mreg.destroy();
-                } catch (Throwable e) {
-                	logger.error(e.getMessage(), e);
-                }
-            }
-            MREGS.clear();
-        } finally {
-            // 释放锁
-            LOCK.unlock();
-        }
-    }
-    
-    @Override
-    public Mconf getMconf(NURL nurl) {
-    	nurl = nurl.setPath(Mreg.class.getName()).addParameter(Consts.INTERFACE_KEY, Mconf.class.getName());
-    	String key = nurl.toServiceString();
-    	
-        // 锁定配置中心获取过程，保证配置中心单一实例
-        LOCK.lock();
-        try {
-        	Mconf mconf = MCONFS.get(key);
-            if (mconf != null) {
-                return mconf;
-            }
-            mconf = createMconf(nurl);
-            if (mconf == null) {
-                throw new IllegalStateException("Can not create mconf " + nurl);
-            }
-            MCONFS.put(key, mconf);
-            return mconf;
-        } finally {
-            // 释放锁
-            LOCK.unlock();
-        }
-    }
-    
-    public static void destroyMconfAll() {
-        if (logger.isInfoEnabled()) {
-        	logger.info("Close all mconfs " + getMconfs());
-        }
-        
-        // 锁定配置中心关闭过程
-        LOCK.lock();
-        try {
-            for (Mconf mconf : getMconfs()) {
-                try {
-                	mconf.destroy();
-                } catch (Throwable e) {
-                	logger.error(e.getMessage(), e);
-                }
-            }
-            MCONFS.clear();
-        } finally {
-            // 释放锁
-            LOCK.unlock();
-        }
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getCoon(NURL nurl, Class<T> cls) {
+		nurl = nurl.setPath(Mreg.class.getName()).addParameter(Consts.INTERFACE_KEY, Mreg.class.getName());
+		String key = nurl.toServiceString();
 
-    protected abstract Mreg createMreg(NURL nurl);
-    protected abstract Mconf createMconf(NURL nurl);
+		// 锁定服务获取过程，保证服务单一实例
+		LOCK.lock();
+		try {
+			Coon coon = COON_MAP.get(key);
+			if (coon != null) {
+				return (T)coon;
+			}
+
+			if(Mreg.class.getName().equals(cls.getName())){
+				coon = createMreg(nurl);
+			} else if(Mconf.class.getName().equals(cls.getName())){
+				coon = createMconf(nurl);
+			} else if(Mlock.class.getName().equals(cls.getName())){
+				coon = createMlock(nurl);
+			}
+			
+			if (coon == null) {
+				throw new IllegalStateException("Can not create coon " + nurl);
+			}
+			
+			COON_MAP.put(key, coon);
+			
+			return (T)coon;
+		} finally {
+			LOCK.unlock();
+		}
+	}
+
+	public static void destroyMregAll() {
+		if (logger.isInfoEnabled()) {
+			logger.info("Close all coons " + getCoons());
+		}
+
+		// 锁定服务关闭过程
+		LOCK.lock();
+		try {
+			for (Coon coon : getCoons()) {
+				try {
+					coon.destroy();
+				} catch (Throwable e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+			COON_MAP.clear();
+		} finally {
+			LOCK.unlock();
+		}
+	}
+
+	protected abstract Mreg createMreg(NURL nurl);
+	protected abstract Mconf createMconf(NURL nurl);
+	protected abstract Mlock createMlock(NURL nurl);
 
 }

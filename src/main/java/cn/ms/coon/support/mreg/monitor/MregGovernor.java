@@ -67,7 +67,7 @@ public class MregGovernor implements CoonListener<NURL> {
 	public boolean start(NURL url) throws Exception {
 		this.url = url;
 		CoonFactory coonFactory = ExtensionLoader.getLoader(CoonFactory.class).getExtension(this.url.getProtocol());
-		mreg = coonFactory.getMreg(url);
+		mreg = coonFactory.getCoon(url, Mreg.class);
 
 		int connectTimeout = this.url.getParameter(Consts.CONNECT_TIMEOUT_KEY, 60000) / 1000;
 		while (!mreg.available() && connectTimeout-- > 0) {

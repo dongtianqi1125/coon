@@ -18,6 +18,7 @@ import cn.ms.coon.zookeeper.transporter.ZkTransporter;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.ChildListener;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.StateListener;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.ExtensionLoader;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 public class ZookeeperMreg extends FailbackMreg {
@@ -26,13 +27,14 @@ public class ZookeeperMreg extends FailbackMreg {
 
     private final static int DEFAULT_ZOOKEEPER_PORT = 2181;
     private final static String DEFAULT_ROOT = "ms";
-    private final String root;
+    private String root;
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
     private final ConcurrentMap<NURL, ConcurrentMap<CoonListener<NURL>, ChildListener>> zkListeners = new ConcurrentHashMap<NURL, ConcurrentMap<CoonListener<NURL>, ChildListener>>();
-    private final ZkTransporter transporter;
+    private ZkTransporter transporter;
     
-    public ZookeeperMreg(NURL nurl, ZkTransporter transporter) {
-        super(nurl);
+    @Override
+    public void connect(NURL nurl) {
+        super.connect(nurl);
         if (nurl.isAnyHost()) {
     		throw new IllegalStateException("registry address == null");
     	}
@@ -42,8 +44,11 @@ public class ZookeeperMreg extends FailbackMreg {
         }
         
         this.root = group;
-        transporter.connect(nurl);
-        this.transporter = transporter;
+        
+		String transporter = nurl.getParameter(Consts.TRANSPORTER_KEY, Consts.TRANSPORTER_DEV_VAL);
+		this.transporter = ExtensionLoader.getLoader(ZkTransporter.class).getExtension(transporter);
+		this.transporter.connect(nurl);
+		
         this.transporter.addStateListener(new StateListener() {
             public void stateChanged(int state) {
             	if (state == RECONNECTED) {

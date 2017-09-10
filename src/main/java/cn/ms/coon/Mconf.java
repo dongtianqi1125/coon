@@ -3,7 +3,6 @@ package cn.ms.coon;
 import java.util.List;
 
 import cn.ms.coon.support.mconf.Mcf;
-import cn.ms.neural.NURL;
 import cn.ms.neural.extension.NSPI;
 
 /**
@@ -34,8 +33,6 @@ import cn.ms.neural.extension.NSPI;
  */
 @NSPI("zookeeper")
 public interface Mconf extends Coon {
-
-	void connect(NURL nurl);
 
 	void publish(Mcf mcf, Object obj);
 

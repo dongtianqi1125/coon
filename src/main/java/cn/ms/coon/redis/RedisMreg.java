@@ -38,20 +38,21 @@ public class RedisMreg extends FailbackMreg {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisMreg.class);
 
-    private final String root;
+    private String root;
     private boolean replicate;
-    private final int expirePeriod;
-    private final int reconnectPeriod;
+    private int expirePeriod;
+    private int reconnectPeriod;
     private volatile boolean admin = false;
     private final static String DEFAULT_ROOT = "ms";
 	private static final int DEFAULT_REDIS_PORT = 6379;
     private final Map<String, JedisPool> jedisPools = new ConcurrentHashMap<String, JedisPool>();
     private final ConcurrentMap<String, Notifier> notifiers = new ConcurrentHashMap<String, Notifier>();
-    private final ScheduledFuture<?> expireFuture;
+    private ScheduledFuture<?> expireFuture;
     private final ScheduledExecutorService expireExecutor = Executors.newScheduledThreadPool(1, new NamedThreadFactory("RedisMregExpireTimer", true));
 
-    public RedisMreg(NURL nurl) {
-        super(nurl);
+    @Override
+    public void connect(NURL nurl) {
+    	super.connect(nurl);
         if (nurl.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
         }

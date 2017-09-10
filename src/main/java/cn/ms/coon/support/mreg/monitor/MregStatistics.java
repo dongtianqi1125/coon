@@ -73,7 +73,7 @@ public class MregStatistics {
 	public static Map<String, Object> getRegistries(NURL url) {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 
-		Collection<Mreg> mregs = AbstractCoonFactory.getMregs();
+		Collection<Mreg> mregs = AbstractCoonFactory.getCoons(Mreg.class);
 		int registeredCount = 0;
 		int subscribedCount = 0;
 		if (mregs != null && mregs.size() > 0) {
@@ -120,7 +120,7 @@ public class MregStatistics {
 
 		// 获取所有的注册中心地址
 		Mreg mreg = null;
-		Collection<Mreg> mregs = AbstractCoonFactory.getMregs();
+		Collection<Mreg> mregs = AbstractCoonFactory.getCoons(Mreg.class);
 		if (mregs != null && mregs.size() > 0) {
 			List<String> registryList = new ArrayList<String>();
 			for (Mreg r : mregs) {
@@ -159,7 +159,7 @@ public class MregStatistics {
 		String registryAddress = url.getParameter("registry", "");
 
 		Mreg mreg = null;
-		Collection<Mreg> mregs = AbstractCoonFactory.getMregs();
+		Collection<Mreg> mregs = AbstractCoonFactory.getCoons(Mreg.class);
 		if (mregs != null && mregs.size() > 0) {
 			List<String> registryList = new ArrayList<String>();
 			for (Mreg r : mregs) {

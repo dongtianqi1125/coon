@@ -30,16 +30,17 @@ public abstract class FailbackMreg extends AbstractMreg {
     // 定时任务执行器
     private final ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1, new NamedThreadFactory("MsRegistryFailedRetryTimer", true));
     // 失败重试定时器，定时检查是否有请求失败，如有，无限次重试
-    private final ScheduledFuture<?> retryFuture;
+    private ScheduledFuture<?> retryFuture;
     private final Set<NURL> failedRegistered = new ConcurrentHashSet<NURL>();
     private final Set<NURL> failedUnregistered = new ConcurrentHashSet<NURL>();
     private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> failedSubscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
     private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> failedUnsubscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
     private final ConcurrentMap<NURL, Map<CoonListener<NURL>, List<NURL>>> failedNotified = new ConcurrentHashMap<NURL, Map<CoonListener<NURL>, List<NURL>>>();
 
-    public FailbackMreg(NURL url) {
-        super(url);
-        int retryPeriod = url.getParameter(Consts.REGISTRY_RETRY_PERIOD_KEY, Consts.DEFAULT_REGISTRY_RETRY_PERIOD);
+    @Override
+    public void connect(NURL nurl) {
+        super.connect(nurl);
+        int retryPeriod = nurl.getParameter(Consts.REGISTRY_RETRY_PERIOD_KEY, Consts.DEFAULT_REGISTRY_RETRY_PERIOD);
         this.retryFuture = retryExecutor.scheduleWithFixedDelay(new Runnable() {
             public void run() {
                 try {

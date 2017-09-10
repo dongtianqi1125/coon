@@ -42,20 +42,22 @@ public abstract class AbstractMreg implements Mreg {
     private static final String NURL_SPLIT = "\\s+";
     private NURL mregNurl;
     // 本地磁盘缓存文件
-    private final File file;
+    private File file;
     // 本地磁盘缓存，其中特殊的key值.registies记录注册中心列表，其它均为notified服务提供者列表
     private final Properties properties = new Properties();
     // 文件缓存定时写入
     private final ExecutorService mregCacheExecutor = Executors.newFixedThreadPool(1, new NamedThreadFactory("LocalSaveMregCache", true));
     //是否是同步保存文件
-    private final boolean syncSaveFile ;
+    private boolean syncSaveFile ;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<NURL> registered = new ConcurrentHashSet<NURL>();
     private final ConcurrentMap<NURL, Set<CoonListener<NURL>>> subscribed = new ConcurrentHashMap<NURL, Set<CoonListener<NURL>>>();
     private final ConcurrentMap<NURL, Map<String, List<NURL>>> notified = new ConcurrentHashMap<NURL, Map<String, List<NURL>>>();
 
-    public AbstractMreg(NURL nurl) {
-    	setNurl(nurl);
+    @Override
+    public void connect(NURL nurl) {
+    	this.setNurl(nurl);
+    	
         // 启动文件保存定时器
         syncSaveFile = nurl.getParameter(Consts.REGISTRY_FILESAVE_SYNC_KEY, false);
         String filename = nurl.getParameter(Consts.FILE_KEY, System.getProperty("user.home") + "/.mreg/mreg-" + nurl.getHost() + ".cache");
