@@ -22,21 +22,19 @@ public abstract class AbstractCoonFactory implements CoonFactory {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCoonFactory.class);
 
-	// 服务获取过程锁
 	private static final ReentrantLock LOCK = new ReentrantLock();
-	// 服务集合 Map<CoonAddress, Coon>
 	private static final Map<String, Coon> COON_MAP = new ConcurrentHashMap<String, Coon>();
 
 	public static <T> Collection<Coon> getCoons() {
 		return Collections.unmodifiableCollection(COON_MAP.values());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> Collection<T> getCoons(Class<T> cls) {
 		List<T> list = new ArrayList<T>();
-		for (Coon coon:COON_MAP.values()) {
-			if(coon.getClass().getName().equals(cls.getName())){
-				list.add((T)coon);
+		for (Coon coon : COON_MAP.values()) {
+			if (coon.getClass().getName().equals(cls.getName())) {
+				list.add((T) coon);
 			}
 		}
 		return list;
@@ -48,29 +46,28 @@ public abstract class AbstractCoonFactory implements CoonFactory {
 		nurl = nurl.setPath(Mreg.class.getName()).addParameter(Consts.INTERFACE_KEY, Mreg.class.getName());
 		String key = nurl.toServiceString();
 
-		// 锁定服务获取过程，保证服务单一实例
 		LOCK.lock();
 		try {
 			Coon coon = COON_MAP.get(key);
 			if (coon != null) {
-				return (T)coon;
+				return (T) coon;
 			}
 
-			if(Mreg.class.getName().equals(cls.getName())){
+			if (Mreg.class.getName().equals(cls.getName())) {
 				coon = createMreg(nurl);
-			} else if(Mconf.class.getName().equals(cls.getName())){
+			} else if (Mconf.class.getName().equals(cls.getName())) {
 				coon = createMconf(nurl);
-			} else if(Mlock.class.getName().equals(cls.getName())){
+			} else if (Mlock.class.getName().equals(cls.getName())) {
 				coon = createMlock(nurl);
 			}
-			
+
 			if (coon == null) {
 				throw new IllegalStateException("Can not create coon " + nurl);
 			}
-			
+
 			COON_MAP.put(key, coon);
-			
-			return (T)coon;
+
+			return (T) coon;
 		} finally {
 			LOCK.unlock();
 		}
@@ -81,7 +78,6 @@ public abstract class AbstractCoonFactory implements CoonFactory {
 			logger.info("Close all coons " + getCoons());
 		}
 
-		// 锁定服务关闭过程
 		LOCK.lock();
 		try {
 			for (Coon coon : getCoons()) {

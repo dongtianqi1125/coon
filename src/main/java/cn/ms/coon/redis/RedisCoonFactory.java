@@ -18,13 +18,23 @@ public class RedisCoonFactory extends AbstractCoonFactory {
 	
 	@Override
 	public Mreg createMreg(NURL nurl) {
+		logger.info("Is loading mreg center...");
+
 		String key = this.getClass().getAnnotation(Extension.class).value();
-		return ExtensionLoader.getLoader(Mreg.class).getExtension(key);
+		Mreg mreg = ExtensionLoader.getLoader(Mreg.class).getExtension(key);
+		mreg.connect(nurl);
+		if (!mreg.available()) {
+			throw new IllegalStateException("No mreg center available: " + nurl);
+		} else {
+			logger.info("The mreg center started successed!");
+		}
+
+		return mreg;
 	}
 
 	@Override
 	public Mconf createMconf(NURL nurl) {
-		logger.info("Is loading conf and mconf center...");
+		logger.info("Is loading mconf center...");
 
 		String key = this.getClass().getAnnotation(Extension.class).value();
 		Mconf mconf = ExtensionLoader.getLoader(Mconf.class).getExtension(key);
@@ -34,14 +44,24 @@ public class RedisCoonFactory extends AbstractCoonFactory {
 		} else {
 			logger.info("The mconf center started successed!");
 		}
-		
+
 		return mconf;
 	}
-	
+
 	@Override
 	public Mlock createMlock(NURL nurl) {
-		// TODO Auto-generated method stub
-		return null;
+		logger.info("Is loading mlock center...");
+
+		String key = this.getClass().getAnnotation(Extension.class).value();
+		Mlock mlock = ExtensionLoader.getLoader(Mlock.class).getExtension(key);
+		mlock.connect(nurl);
+		if (!mlock.available()) {
+			throw new IllegalStateException("No mlock center available: " + nurl);
+		} else {
+			logger.info("The mlock center started successed!");
+		}
+
+		return mlock;
 	}
 	
 }
