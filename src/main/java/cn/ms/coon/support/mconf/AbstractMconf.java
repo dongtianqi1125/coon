@@ -3,7 +3,7 @@ package cn.ms.coon.support.mconf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.Mconf;
+import cn.ms.coon.service.Mconf;
 import cn.ms.neural.NURL;
 
 import com.alibaba.fastjson.JSON;

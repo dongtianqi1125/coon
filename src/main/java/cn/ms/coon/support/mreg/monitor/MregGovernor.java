@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.CoonFactory;
-import cn.ms.coon.Mreg;
+import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.Consts;
 import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.mreg.MregCommon;

@@ -1,7 +1,8 @@
-package cn.ms.coon;
+package cn.ms.coon.service;
 
 import java.util.List;
 
+import cn.ms.coon.Coon;
 import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.extension.NSPI;

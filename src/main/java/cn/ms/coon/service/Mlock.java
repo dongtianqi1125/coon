@@ -1,5 +1,6 @@
-package cn.ms.coon;
+package cn.ms.coon.service;
 
+import cn.ms.coon.Coon;
 import cn.ms.neural.extension.NSPI;
 
 /**

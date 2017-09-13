@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.ms.coon.CoonFactory;
-import cn.ms.coon.Mreg;
+import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.mreg.AbstractMreg;
 import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.neural.NURL;
