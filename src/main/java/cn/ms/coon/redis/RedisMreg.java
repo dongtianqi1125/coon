@@ -33,7 +33,9 @@ import cn.ms.coon.support.mreg.FailbackMreg;
 import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.coon.support.mreg.exception.MregException;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.Extension;
 
+@Extension("redis")
 public class RedisMreg extends FailbackMreg {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisMreg.class);

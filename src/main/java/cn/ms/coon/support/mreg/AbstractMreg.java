@@ -56,7 +56,10 @@ public abstract class AbstractMreg implements Mreg {
 
     @Override
     public void connect(NURL nurl) {
-    	this.setNurl(nurl);
+    	if (nurl == null) {
+            throw new IllegalArgumentException("mreg nurl == null");
+        }
+        this.mregNurl = nurl;
     	
         // 启动文件保存定时器
         syncSaveFile = nurl.getParameter(Consts.REGISTRY_FILESAVE_SYNC_KEY, false);
@@ -73,13 +76,6 @@ public abstract class AbstractMreg implements Mreg {
         this.file = file;
         loadProperties();
         notify(nurl.getBackupUrls());
-    }
-
-    protected void setNurl(NURL nurl) {
-        if (nurl == null) {
-            throw new IllegalArgumentException("mreg nurl == null");
-        }
-        this.mregNurl = nurl;
     }
 
     @Override
@@ -492,11 +488,6 @@ public abstract class AbstractMreg implements Mreg {
                 }
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return getNurl().toString();
     }
 
 }

@@ -23,6 +23,7 @@ import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.coon.support.mconf.AbstractMconf;
 import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.Extension;
 import cn.ms.neural.util.BeanUtils;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 
@@ -31,6 +32,7 @@ import cn.ms.neural.util.micro.ConcurrentHashSet;
  * 
  * @author lry
  */
+@Extension("redis")
 public class RedisMconf extends AbstractMconf {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisMconf.class);

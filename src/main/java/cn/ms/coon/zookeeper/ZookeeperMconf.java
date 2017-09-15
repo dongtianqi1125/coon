@@ -15,6 +15,7 @@ import cn.ms.coon.support.mconf.Mcf;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.DataListener;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.Extension;
 import cn.ms.neural.extension.ExtensionLoader;
 import cn.ms.neural.extension.NSPI;
 
@@ -25,6 +26,7 @@ import com.alibaba.fastjson.JSON;
  * 
  * @author lry
  */
+@Extension("zookeeper")
 public class ZookeeperMconf extends AbstractMconf {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperMconf.class);

@@ -16,7 +16,6 @@ import cn.ms.coon.service.Mlock;
 import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
-import cn.ms.neural.extension.Extension;
 import cn.ms.neural.extension.ExtensionLoader;
 
 /**
@@ -24,8 +23,10 @@ import cn.ms.neural.extension.ExtensionLoader;
  * 
  * @author lry
  */
-public class CoonFactory {
+public enum CoonFactory {
 
+	CF;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CoonFactory.class);
 
 	private static final ReentrantLock LOCK = new ReentrantLock();
@@ -68,6 +69,8 @@ public class CoonFactory {
 
 			if (coon == null) {
 				throw new IllegalStateException("Can not create coon " + nurl);
+			} else {
+				coon.connect(nurl);
 			}
 
 			COON_MAP.put(key, coon);
@@ -100,9 +103,7 @@ public class CoonFactory {
 
 	private Mreg createMreg(NURL nurl) {
 		logger.info("Is loading mreg center...");
-
-		String key = this.getClass().getAnnotation(Extension.class).value();
-		Mreg mreg = ExtensionLoader.getLoader(Mreg.class).getExtension(key);
+		Mreg mreg = ExtensionLoader.getLoader(Mreg.class).getExtension(nurl.getProtocol());
 		mreg.connect(nurl);
 		if (!mreg.available()) {
 			throw new IllegalStateException("No mreg center available: " + nurl);
@@ -115,9 +116,7 @@ public class CoonFactory {
 
 	private Mconf createMconf(NURL nurl) {
 		logger.info("Is loading mconf center...");
-
-		String key = this.getClass().getAnnotation(Extension.class).value();
-		Mconf mconf = ExtensionLoader.getLoader(Mconf.class).getExtension(key);
+		Mconf mconf = ExtensionLoader.getLoader(Mconf.class).getExtension(nurl.getProtocol());
 		mconf.connect(nurl);
 		if (!mconf.available()) {
 			throw new IllegalStateException("No mconf center available: " + nurl);
@@ -130,9 +129,7 @@ public class CoonFactory {
 
 	private Mlock createMlock(NURL nurl) {
 		logger.info("Is loading mlock center...");
-
-		String key = this.getClass().getAnnotation(Extension.class).value();
-		Mlock mlock = ExtensionLoader.getLoader(Mlock.class).getExtension(key);
+		Mlock mlock = ExtensionLoader.getLoader(Mlock.class).getExtension(nurl.getProtocol());
 		mlock.connect(nurl);
 		if (!mlock.available()) {
 			throw new IllegalStateException("No mlock center available: " + nurl);

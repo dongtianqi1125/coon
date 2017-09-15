@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +20,11 @@ import cn.ms.coon.zookeeper.transporter.ZkTransporter;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.ChildListener;
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.StateListener;
 import cn.ms.neural.NURL;
+import cn.ms.neural.extension.Extension;
 import cn.ms.neural.extension.ExtensionLoader;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 
+@Extension("zookeeper")
 public class ZookeeperMreg extends FailbackMreg {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperMreg.class);
@@ -47,8 +51,9 @@ public class ZookeeperMreg extends FailbackMreg {
         
 		String transporter = nurl.getParameter(Consts.TRANSPORTER_KEY, Consts.TRANSPORTER_DEV_VAL);
 		this.transporter = ExtensionLoader.getLoader(ZkTransporter.class).getExtension(transporter);
-		this.transporter.connect(nurl);
 		
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
+		this.transporter.connect(nurl);
         this.transporter.addStateListener(new StateListener() {
             public void stateChanged(int state) {
             	if (state == RECONNECTED) {
@@ -57,9 +62,17 @@ public class ZookeeperMreg extends FailbackMreg {
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 					}
+            	} else if(state == CONNECTED) {
+            		countDownLatch.countDown();
             	}
             }
         });
+        
+        try {
+			countDownLatch.await(nurl.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT), TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			logger.error("The countDownLatch exception", e);
+		}
     }
 
     @Override
