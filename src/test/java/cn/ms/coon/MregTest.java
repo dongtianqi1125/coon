@@ -1,10 +1,10 @@
 package cn.ms.coon;
 
-import com.alibaba.fastjson.JSON;
-
 import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.mreg.monitor.MregGovernor;
 import cn.ms.neural.NURL;
+
+import com.alibaba.fastjson.JSON;
 
 public class MregTest {
 
@@ -14,21 +14,19 @@ public class MregTest {
 			Mreg mreg = CoonFactory.CF.getCoon(nurl, Mreg.class);
 			mreg.connect(nurl);
 			
-			mreg.register(NURL.valueOf("dubbo://10.14.23.42:8080/cn.ms.coon.UserService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.43:8080/cn.ms.coon.OrderService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.44:8080/cn.ms.coon.GoodsService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.45:8080/cn.ms.coon.PayService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.46:8080/cn.ms.coon.UnipayService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.47:8080/cn.ms.coon.UserService?version=1.0.0&group=g1&category=providers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.48:8080/cn.ms.coon.MemberService?version=1.0.0&group=g1&category=consumers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.49:8080/cn.ms.coon.MemberService?version=1.0.0&group=g1&category=consumers"));
-			mreg.register(NURL.valueOf("dubbo://10.14.23.50:8080/cn.ms.coon.AdminService?version=1.0.0&group=g1&category=consumers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.42:8080/cn.ms.coon.UserService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.43:8080/cn.ms.coon.OrderService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.44:8080/cn.ms.coon.GoodsService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.45:8080/cn.ms.coon.PayService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.46:8080/cn.ms.coon.UnipayService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.47:8080/cn.ms.coon.UserService?version=1.0.0&group=weixin&category=providers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.48:8080/cn.ms.coon.UserService?version=1.0.0&group=weixin&category=consumers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.49:8080/cn.ms.coon.UserService?version=1.0.0&group=weixin&category=consumers"));
+			mreg.register(NURL.valueOf("dubbo://10.14.23.50:8080/cn.ms.coon.AdminService?version=1.0.0&group=weixin&category=consumers"));
 			
-			MregGovernor mregGovernor = new MregGovernor();
-			mregGovernor.start(mreg);
+			MregGovernor mregGovernor = new MregGovernor(mreg);
 			Thread.sleep(3000);
-			System.out.println(JSON.toJSONString(mregGovernor.getRegistryCache()));
-			
+			System.out.println(JSON.toJSONString(mregGovernor.getServices()));
 			Thread.sleep(1000000);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -3,8 +3,8 @@ package cn.ms.coon.support.mreg.monitor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -15,6 +15,7 @@ import cn.ms.coon.support.Consts;
 import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.neural.NURL;
+import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 public class MregGovernor implements CoonListener<NURL> {
 
@@ -36,9 +37,9 @@ public class MregGovernor implements CoonListener<NURL> {
 	private static final AtomicLong ID = new AtomicLong();
 	private final ConcurrentHashMap<String, Long> NURL_IDS_MAPPER = new ConcurrentHashMap<String, Long>();
 	// ConcurrentMap<category, ConcurrentMap<servicename, Map<Long, NURL>>>
-	private final ConcurrentMap<String, ConcurrentMap<String, Map<Long, NURL>>> registryCache = new ConcurrentHashMap<String, ConcurrentMap<String, Map<Long, NURL>>>();
+	private final Map<String, Map<String, Map<Long, NURL>>> registryCache = new ConcurrentHashMap<String, Map<String, Map<Long, NURL>>>();
 
-    public void start(Mreg mreg) {
+    public MregGovernor(Mreg mreg) {
     	this.mreg = mreg;
     	new Thread(new Runnable() {
     		@Override
@@ -53,7 +54,7 @@ public class MregGovernor implements CoonListener<NURL> {
 		mreg.unsubscribe(SUBSCRIBE, this);
 	}
 
-	public ConcurrentMap<String, ConcurrentMap<String, Map<Long, NURL>>> getRegistryCache() {
+	public Map<String, Map<String, Map<Long, NURL>>> getRegistryCache() {
 		return registryCache;
 	}
 
@@ -84,7 +85,7 @@ public class MregGovernor implements CoonListener<NURL> {
 		for (NURL nurl : nurls) {
 			String category = nurl.getParameter(Consts.CATEGORY_KEY, Consts.PROVIDERS_CATEGORY);
 			if (Consts.EMPTY_PROTOCOL.equalsIgnoreCase(nurl.getProtocol())) { // 注意：empty协议的group和version为*
-				ConcurrentMap<String, Map<Long, NURL>> services = registryCache.get(category);
+				Map<String, Map<Long, NURL>> services = registryCache.get(category);
 				if (services != null) {
 					String group = nurl.getParameter(Consts.GROUP_KEY);
 					String version = nurl.getParameter(Consts.VERSION_KEY);
@@ -130,12 +131,79 @@ public class MregGovernor implements CoonListener<NURL> {
 
 		for (Map.Entry<String, Map<String, Map<Long, NURL>>> categoryEntry : categories.entrySet()) {
 			String category = categoryEntry.getKey();
-			ConcurrentMap<String, Map<Long, NURL>> services = registryCache.get(category);
+			Map<String, Map<Long, NURL>> services = registryCache.get(category);
 			if (services == null) {
 				services = new ConcurrentHashMap<String, Map<Long, NURL>>();
 				registryCache.put(category, services);
 			}
 			services.putAll(categoryEntry.getValue());
+		}
+		
+		this.doNotifyAnalysis();
+	}
+	
+	public final static String HOSTS = "hosts";
+	public final static String INSTANCES = "instances";
+	// ConcurrentMap<servicename, ConcurrentMap<category, Map<Long, NURL>>>
+	Map<String, Map<String, ServiceUnit>> services = new ConcurrentHashMap<String, Map<String, ServiceUnit>>();
+	
+	public Map<String, Map<String, ServiceUnit>> getServices() {
+		return services;
+	}
+	
+	private void doNotifyAnalysis() {
+		// ConcurrentMap<category, ConcurrentMap<servicename, Map<Long, NURL>>>
+		Map<String, Map<String, Map<Long, NURL>>> registryCache = this.getRegistryCache();
+		for (Map.Entry<String, Map<String, Map<Long, NURL>>> categoryEntry : registryCache.entrySet()) {
+			for (Map.Entry<String, Map<Long, NURL>> serviceEntry : categoryEntry.getValue().entrySet()) {
+				Map<String, ServiceUnit> serviceMap = services.get(serviceEntry.getKey());
+				if(serviceMap == null){
+					services.put(serviceEntry.getKey(), serviceMap = new ConcurrentHashMap<String, ServiceUnit>());
+				}
+				
+				ServiceUnit store = serviceMap.get(categoryEntry.getKey());
+				if(store == null){
+					serviceMap.put(categoryEntry.getKey(), store = new ServiceUnit());
+				}
+				
+				Map<Long, NURL> categoryMap = store.getStatistics();
+				categoryMap.putAll(serviceEntry.getValue());// 统计
+				Map<String, Set<String>> analysisMap = store.getAnalysis();
+				for (NURL nurl:serviceEntry.getValue().values()) {//分析
+					analysisMap.get(HOSTS).add(nurl.getHost());
+					analysisMap.get(INSTANCES).add(nurl.getAddress());
+				}
+			}
+		}
+		System.out.println("services--->"+services);
+	}
+	
+	public class ServiceUnit {
+		Map<String, Set<String>> analysis = new ConcurrentHashMap<String, Set<String>>();
+		Map<Long, NURL> statistics = new ConcurrentHashMap<Long, NURL>();
+		
+		public ServiceUnit() {
+			analysis.put(HOSTS, new ConcurrentHashSet<String>());
+			analysis.put(INSTANCES, new ConcurrentHashSet<String>());
+		}
+		
+		public Map<String, Set<String>> getAnalysis() {
+			return analysis;
+		}
+		public void setAnalysis(Map<String, Set<String>> analysis) {
+			this.analysis = analysis;
+		}
+		public Map<Long, NURL> getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Map<Long, NURL> statistics) {
+			this.statistics = statistics;
+		}
+
+		@Override
+		public String toString() {
+			return "ServiceUnit [analysis=" + analysis + ", statistics="
+					+ statistics + "]";
 		}
 	}
 
