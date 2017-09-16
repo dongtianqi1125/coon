@@ -1,6 +1,7 @@
 package cn.ms.coon.service;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.ms.coon.Coon;
 import cn.ms.coon.support.CoonListener;
@@ -47,5 +48,9 @@ public interface Mconf extends Coon {
 	<T> T lookup(Mcf mcf, Class<T> cls);
 	
 	<T> List<T> lookups(Mcf mcf, Class<T> cls);
+	
+	Map<String, Map<String, String>> apps();
+	
+	Map<String, Map<String, String>> confs();
 
 }

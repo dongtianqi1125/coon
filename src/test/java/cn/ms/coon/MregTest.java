@@ -1,7 +1,7 @@
 package cn.ms.coon;
 
 import cn.ms.coon.service.Mreg;
-import cn.ms.coon.support.mreg.monitor.MregGovernor;
+import cn.ms.coon.support.mreg.MregGovernor;
 import cn.ms.neural.NURL;
 
 import com.alibaba.fastjson.JSON;

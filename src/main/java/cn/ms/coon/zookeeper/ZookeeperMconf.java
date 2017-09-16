@@ -1,6 +1,7 @@
 package cn.ms.coon.zookeeper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -159,6 +160,53 @@ public class ZookeeperMconf extends AbstractMconf {
 			
 			return list;
 		}
+	}
+	
+	@Override
+	public Map<String, Map<String, String>> apps() {
+		Map<String, Map<String, String>> apps = new ConcurrentHashMap<String, Map<String, String>>();
+		try {
+			List<String> preApps = transporter.getChildren("/"+super.ROOT);
+			for (String preApp:preApps) {
+				NURL nurl = NURL.valueOf("/" + preApp);
+				apps.put(nurl.getPath(), nurl.getParameters());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return apps;
+	}
+	
+	public static void main(String[] args) {
+		ZookeeperMconf zookeeperMconf = new ZookeeperMconf();
+		zookeeperMconf.connect(NURL.valueOf("zookeeper://127.0.0.1:2181/mconf?session=5000"));
+		System.out.println(zookeeperMconf.apps());
+		System.out.println(zookeeperMconf.confs());
+	}
+	
+	@Override
+	public Map<String, Map<String, String>> confs() {
+		Map<String, Map<String, String>> confs = new ConcurrentHashMap<String, Map<String, String>>();
+		try {
+			List<String> preApps = transporter.getChildren("/"+super.ROOT);
+			for (String preApp:preApps) {
+				NURL appNURL = NURL.valueOf("/" + preApp);
+				List<String> preConfs = transporter.getChildren("/"+super.ROOT + "/" + preApp);
+				for (String preConf:preConfs) {
+					NURL confNURL = NURL.valueOf("/" + preConf);
+					Map<String, String> attributes =new HashMap<String, String>();
+					attributes.putAll(confNURL.getParameters());
+					attributes.putAll(appNURL.getParameters());
+					attributes.put(Consts.APPLICATION_KEY, appNURL.getPath());
+					confs.put(confNURL.getPath(), attributes);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return confs;
 	}
 
 	@Override

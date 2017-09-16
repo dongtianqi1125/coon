@@ -1,4 +1,4 @@
-package cn.ms.coon.support.mreg.monitor;
+package cn.ms.coon.support.mreg;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.Consts;
 import cn.ms.coon.support.CoonListener;
-import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.neural.NURL;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 

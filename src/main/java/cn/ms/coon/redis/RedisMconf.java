@@ -217,6 +217,18 @@ public class RedisMconf extends AbstractMconf {
 
 		return null;
 	}
+	
+	@Override
+	public Map<String, Map<String, String>> apps() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Map<String, Map<String, String>> confs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public void destroy() {
