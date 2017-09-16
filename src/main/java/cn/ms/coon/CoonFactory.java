@@ -49,7 +49,7 @@ public enum CoonFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getCoon(NURL nurl, Class<T> cls) {
-		nurl = nurl.setPath(Mreg.class.getName()).addParameter(Consts.INTERFACE_KEY, Mreg.class.getName());
+		nurl = nurl.setPath(cls.getName()).addParameter(Consts.INTERFACE_KEY, cls.getName());
 		String key = nurl.toServiceString();
 
 		LOCK.lock();

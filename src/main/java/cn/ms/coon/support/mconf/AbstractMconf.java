@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.service.Mconf;
+import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
 
 import com.alibaba.fastjson.JSON;
@@ -18,7 +19,7 @@ public abstract class AbstractMconf implements Mconf {
 	@Override
 	public void connect(NURL nurl) {
 		this.nurl = nurl;
-		this.ROOT = nurl.getPath();
+		this.ROOT = nurl.getParameter(Consts.GROUP_KEY, "mconf");
 	}
 	@Override
 	public NURL getNurl() {
