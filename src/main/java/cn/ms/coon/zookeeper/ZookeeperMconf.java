@@ -42,6 +42,7 @@ public class ZookeeperMconf extends AbstractMconf {
 		NSPI nspi = ZkTransporter.class.getAnnotation(NSPI.class);
 		String transporter = nurl.getParameter(Consts.TRANSPORTER_KEY, nspi.value());
 		this.transporter = ExtensionLoader.getLoader(ZkTransporter.class).getExtension(transporter);
+		this.transporter.connect(nurl);
 	}
 	
 	@Override

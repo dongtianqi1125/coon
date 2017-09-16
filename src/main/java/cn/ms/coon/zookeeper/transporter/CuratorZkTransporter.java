@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -21,6 +23,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.WatchedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
@@ -30,22 +34,25 @@ import cn.ms.neural.util.micro.ConcurrentHashSet;
 @Extension("curator")
 public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> {
 
+	private static final Logger logger = LoggerFactory.getLogger(CuratorZkTransporter.class);
+	
 	private CuratorFramework client;
 
 	@Override
-	public void connect(NURL url) {
-		super.connect(url);
+	public void connect(NURL nurl) {
+		super.connect(nurl);
 		Builder builder = CuratorFrameworkFactory.builder()
-				.connectString(url.getBackupAddress())
+				.connectString(nurl.getBackupAddress())
 				.retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 1000))
-				.connectionTimeoutMs(url.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT))
-                .sessionTimeoutMs(url.getParameter(Consts.SESSION_TIMEOUT_KEY, Consts.DEFAULT_SESSION_TIMEOUT));
+				.connectionTimeoutMs(nurl.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT))
+                .sessionTimeoutMs(nurl.getParameter(Consts.SESSION_TIMEOUT_KEY, Consts.DEFAULT_SESSION_TIMEOUT));
 		
-		String authority = url.getAuthority();
+		String authority = nurl.getAuthority();
 		if (authority != null && authority.length() > 0) {
 			builder = builder.authorization("digest", authority.getBytes());
 		}
 		
+		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		client = builder.build();
 		client.getConnectionStateListenable().addListener(
 			new ConnectionStateListener() {
@@ -54,12 +61,19 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 						CuratorZkTransporter.this.stateChanged(StateListener.DISCONNECTED);
 					} else if (state == ConnectionState.CONNECTED) {
 						CuratorZkTransporter.this.stateChanged(StateListener.CONNECTED);
+		            	countDownLatch.countDown();
 					} else if (state == ConnectionState.RECONNECTED) {
 						CuratorZkTransporter.this.stateChanged(StateListener.RECONNECTED);
 					}
 				}
 			});
 		client.start();
+		
+		try {
+			countDownLatch.await(nurl.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT), TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			logger.error("The countDownLatch exception", e);
+		}
 	}
 
 	@Override
