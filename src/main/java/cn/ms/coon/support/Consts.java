@@ -9,6 +9,13 @@ import java.util.regex.Pattern;
  */
 public class Consts {
 
+	public static final String NODE_KEY= "node";
+	public static final String NODE_DEFAULT_VALUE= "default_node";
+	public static final String ENV_KEY= "env";
+	public static final String ENV_DEFAULT_VALUE= "default_env";
+	public static final String APPLICATION_KEY= "application";
+	public static final String APPLICATION_DEFAULT_VALUE= "default_app";
+	
 	public static final String PROVIDER = "provider";
 	public static final String CONSUMER = "consumer";
 	

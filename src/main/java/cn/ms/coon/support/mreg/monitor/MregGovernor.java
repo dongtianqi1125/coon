@@ -144,8 +144,13 @@ public class MregGovernor implements CoonListener<NURL> {
 	
 	public final static String HOSTS = "hosts";
 	public final static String INSTANCES = "instances";
+	private Map<String, Application>  applications = new ConcurrentHashMap<String, MregGovernor.Application>();
 	// ConcurrentMap<servicename, ConcurrentMap<category, Map<Long, NURL>>>
-	Map<String, Map<String, ServiceUnit>> services = new ConcurrentHashMap<String, Map<String, ServiceUnit>>();
+	private Map<String, Map<String, ServiceUnit>> services = new ConcurrentHashMap<String, Map<String, ServiceUnit>>();
+
+	public Map<String, Application> getApplications() {
+		return applications;
+	}
 	
 	public Map<String, Map<String, ServiceUnit>> getServices() {
 		return services;
@@ -172,19 +177,107 @@ public class MregGovernor implements CoonListener<NURL> {
 				for (NURL nurl:serviceEntry.getValue().values()) {//分析
 					analysisMap.get(HOSTS).add(nurl.getHost());
 					analysisMap.get(INSTANCES).add(nurl.getAddress());
+					
+					//应用分析
+					String app = nurl.getParameter(Consts.APPLICATION_KEY, Consts.APPLICATION_DEFAULT_VALUE);
+					Application application = applications.get(app);
+					if(application == null){
+						applications.put(app, application = new Application());
+						application.setApp(app);
+					}
+					if(Consts.PROVIDERS_CATEGORY.equals(categoryEntry.getKey())){
+						application.getProviders().add(nurl);
+					} else if(Consts.CONSUMERS_CATEGORY.equals(categoryEntry.getKey())){
+						application.getConsumers().add(nurl);
+					}
+					String node = nurl.getParameter(Consts.NODE_KEY, Consts.NODE_DEFAULT_VALUE);
+					store.getNodes().add(node);
+					application.getNodes().add(node);
+					String env = nurl.getParameter(Consts.ENV_KEY, Consts.ENV_DEFAULT_VALUE);
+					store.getEnvs().add(env);
+					application.getEnvs().add(env);
 				}
 			}
 		}
-		System.out.println("services--->"+services);
+	}
+	
+	public class Application {
+		private String app;
+		private Set<String> nodes = new ConcurrentHashSet<String>();
+		private Set<String> envs = new ConcurrentHashSet<String>();
+		private Set<NURL> providers = new ConcurrentHashSet<NURL>();
+		private Set<NURL> consumers = new ConcurrentHashSet<NURL>();
+		private Set<String> confs = new ConcurrentHashSet<String>();
+		
+		public Set<String> getNodes() {
+			return nodes;
+		}
+		public void setNodes(Set<String> nodes) {
+			this.nodes = nodes;
+		}
+		public Set<String> getEnvs() {
+			return envs;
+		}
+		public void setEnvs(Set<String> envs) {
+			this.envs = envs;
+		}
+		public String getApp() {
+			return app;
+		}
+		public void setApp(String app) {
+			this.app = app;
+		}
+		public Set<NURL> getProviders() {
+			return providers;
+		}
+		public void setProviders(Set<NURL> providers) {
+			this.providers = providers;
+		}
+		public Set<NURL> getConsumers() {
+			return consumers;
+		}
+		public void setConsumers(Set<NURL> consumers) {
+			this.consumers = consumers;
+		}
+		public Set<String> getConfs() {
+			return confs;
+		}
+		public void setConfs(Set<String> confs) {
+			this.confs = confs;
+		}
+		@Override
+		public String toString() {
+			return "Application [app=" + app + ", nodes=" + nodes + ", envs="
+					+ envs + ", providers=" + providers + ", consumers="
+					+ consumers + ", confs=" + confs + "]";
+		}
 	}
 	
 	public class ServiceUnit {
+		Set<String> nodes = new ConcurrentHashSet<String>();
+		Set<String> envs = new ConcurrentHashSet<String>();
 		Map<String, Set<String>> analysis = new ConcurrentHashMap<String, Set<String>>();
 		Map<Long, NURL> statistics = new ConcurrentHashMap<Long, NURL>();
 		
 		public ServiceUnit() {
 			analysis.put(HOSTS, new ConcurrentHashSet<String>());
 			analysis.put(INSTANCES, new ConcurrentHashSet<String>());
+		}
+		
+		public Set<String> getNodes() {
+			return nodes;
+		}
+		
+		public void setNodes(Set<String> nodes) {
+			this.nodes = nodes;
+		}
+		
+		public Set<String> getEnvs() {
+			return envs;
+		}
+		
+		public void setEnvs(Set<String> envs) {
+			this.envs = envs;
 		}
 		
 		public Map<String, Set<String>> getAnalysis() {
@@ -202,9 +295,11 @@ public class MregGovernor implements CoonListener<NURL> {
 
 		@Override
 		public String toString() {
-			return "ServiceUnit [analysis=" + analysis + ", statistics="
-					+ statistics + "]";
+			return "ServiceUnit [nodes=" + nodes + ", envs=" + envs
+					+ ", analysis=" + analysis + ", statistics=" + statistics
+					+ "]";
 		}
+
 	}
 
 	/**
