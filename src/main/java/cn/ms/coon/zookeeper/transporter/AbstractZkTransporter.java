@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 
 	private NURL nurl;
 	private volatile boolean closed = false;
+	protected final CountDownLatch countDownLatch = new CountDownLatch(1);
 	private final Set<StateListener> stateListeners = new CopyOnWriteArraySet<StateListener>();
 	private final ConcurrentMap<String, ConcurrentMap<ChildListener, TargetChildListener>> childListeners = new ConcurrentHashMap<String, ConcurrentMap<ChildListener, TargetChildListener>>();
 

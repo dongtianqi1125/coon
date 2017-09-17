@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -53,7 +52,6 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 			builder = builder.authorization("digest", authority.getBytes());
 		}
 		
-		final CountDownLatch countDownLatch = new CountDownLatch(1);
 		client = builder.build();
 		client.getConnectionStateListenable().addListener(
 			new ConnectionStateListener() {
@@ -71,7 +69,8 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 		client.start();
 		
 		try {
-			countDownLatch.await(nurl.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT), TimeUnit.MILLISECONDS);
+			countDownLatch.await(nurl.getParameter(Consts.TIMEOUT_KEY, 
+					Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT), TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
 			logger.error("The countDownLatch exception", e);
 		}

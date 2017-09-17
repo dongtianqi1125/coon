@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkDataListener;
@@ -13,6 +14,8 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
 import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.support.Consts;
 import cn.ms.neural.NURL;
@@ -22,16 +25,18 @@ import cn.ms.neural.util.micro.ConcurrentHashSet;
 @Extension("zkclient")
 public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListener> {
 
+	private static final Logger logger = LoggerFactory.getLogger(ZkclientZkTransporter.class);
+	
 	private ZkClient client;
 	private volatile KeeperState state = KeeperState.SyncConnected;
 
 	@Override
-	public void connect(NURL url) {
-		super.connect(url);
+	public void connect(NURL nurl) {
+		super.connect(nurl);
 		client = new ZkClient(
-                url.getBackupAddress(),
-                url.getParameter(Consts.SESSION_TIMEOUT_KEY, Consts.DEFAULT_SESSION_TIMEOUT),
-                url.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT));
+				nurl.getBackupAddress(),
+				nurl.getParameter(Consts.SESSION_TIMEOUT_KEY, Consts.DEFAULT_SESSION_TIMEOUT),
+				nurl.getParameter(Consts.TIMEOUT_KEY, Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT));
 		
 		client.subscribeStateChanges(new IZkStateListener() {
 			@Override
@@ -41,6 +46,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 					stateChanged(StateListener.DISCONNECTED);
 				} else if (state == KeeperState.SyncConnected) {
 					stateChanged(StateListener.CONNECTED);
+					countDownLatch.countDown();
 				}
 			}
 			
@@ -53,6 +59,13 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 			public void handleSessionEstablishmentError(Throwable error) throws Exception {
 			}
 		});
+		
+		try {
+			countDownLatch.await(nurl.getParameter(Consts.TIMEOUT_KEY, 
+					Consts.DEFAULT_REGISTRY_CONNECT_TIMEOUT), TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			logger.error("The countDownLatch exception", e);
+		}
 	}
 
 	@Override
