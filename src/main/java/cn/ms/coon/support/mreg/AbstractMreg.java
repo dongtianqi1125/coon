@@ -157,7 +157,7 @@ public abstract class AbstractMreg implements Mreg {
                 try {
                     FileLock lock = channel.tryLock();
                 	if (lock == null) {
-                        throw new IOException("Can not lock the mreg cache file " + file.getAbsolutePath() + ", ignore and retry later, maybe multi java process use the file, please config: dubbo.mreg.file=xxx.properties");
+                        throw new IOException("Can not lock the mreg cache file " + file.getAbsolutePath() + ", ignore and retry later, maybe multi java process use the file, please config: mreg.file=xxx.properties");
                     }
                 	// 保存
                     try {

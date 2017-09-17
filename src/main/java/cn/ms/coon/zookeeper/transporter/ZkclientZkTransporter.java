@@ -1,5 +1,6 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +92,7 @@ public class ZkclientZkTransporter extends AbstractZkTransporter<IZkChildListene
 		try {
 			return client.getChildren(path);
         } catch (ZkNoNodeException e) {
-            return null;
+            return new ArrayList<String>();
         }
 	}
 

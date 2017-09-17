@@ -1,5 +1,6 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -121,7 +122,7 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 		try {
 			return client.getChildren().forPath(path);
 		} catch (NoNodeException e) {
-			return null;
+			return new ArrayList<String>();
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
