@@ -38,12 +38,12 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 	public void create(String path, boolean ephemeral) {
 		int i = path.lastIndexOf('/');
 		if (i > 0) {
-			create(path.substring(0, i), false);
+			this.create(path.substring(0, i), false);
 		}
 		if (ephemeral) {
-			createEphemeral(path);
+			this.createEphemeral(path);
 		} else {
-			createPersistent(path);
+			this.createPersistent(path);
 		}
 	}
 	
@@ -63,7 +63,7 @@ public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTr
 		try {
 			List<String> childrens = this.getChildren(path);
 			for (String children:childrens) {
-				String json = doGetChildrenData(path + "/" + children);
+				String json = this.doGetChildrenData(path + "/" + children);
 				if(json == null || json.length() < 1){
 					continue;
 				}

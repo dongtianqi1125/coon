@@ -31,6 +31,8 @@ import cn.ms.neural.NURL;
 import cn.ms.neural.extension.Extension;
 import cn.ms.neural.util.micro.ConcurrentHashSet;
 
+import com.google.common.base.Charsets;
+
 @Extension("curator")
 public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> {
 
@@ -87,9 +89,20 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 	}
 
 	@Override
-	public void createEphemeral(String path) {
+	public void createEphemeral(final String path) {
 		try {
 			client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+			new Thread(new Runnable() {
+	    		@Override
+	    		public void run() {
+	    			try {
+	    				String persistentPath = path.substring(0, path.lastIndexOf("/"));
+		    			String ephemeralPath = path.substring(path.lastIndexOf("/")+1);
+						client.setData().forPath(persistentPath, ephemeralPath.getBytes(Charsets.UTF_8));
+					} catch (Exception e) {
+					}
+	    		}
+	    	}, "ZK-CREATE-EPHEMERAL-THREAD").start();
 		} catch (NodeExistsException e) {
 		} catch (Exception e) {
 			throw new IllegalStateException(e.getMessage(), e);
