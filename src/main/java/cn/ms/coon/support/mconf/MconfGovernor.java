@@ -2,16 +2,11 @@ package cn.ms.coon.support.mconf;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cn.ms.coon.CoonFactory;
 import cn.ms.coon.service.Mconf;
 import cn.ms.neural.NURL;
 
 public class MconfGovernor {
-
-	private static final Logger logger = LoggerFactory.getLogger(MconfGovernor.class);
 
 	Mconf mconf;
 
