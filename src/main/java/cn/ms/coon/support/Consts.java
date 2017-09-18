@@ -16,6 +16,9 @@ public class Consts {
 	public static final String APPLICATION_KEY= "application";
 	public static final String APPLICATION_DEFAULT_VALUE= "default_app";
 	
+    public static final String WEIGHT_KEY= "weight";
+    public static final int DEFAULT_WEIGHT = 100;
+	
 	public static final String PROVIDER = "provider";
 	public static final String CONSUMER = "consumer";
 	
