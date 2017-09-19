@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import cn.ms.coon.api.Mconf;
 import cn.ms.coon.mconf.ApiEntity;
 import cn.ms.coon.mconf.ConsumerEntity;
 import cn.ms.coon.mconf.ParameterEntity;
@@ -16,7 +17,6 @@ import cn.ms.coon.mconf.RouterEntity;
 import cn.ms.coon.mconf.SysconfEntity;
 import cn.ms.coon.mconf.support.ApiParamType;
 import cn.ms.coon.mconf.support.BaseEntity;
-import cn.ms.coon.service.Mconf;
 import cn.ms.coon.support.mconf.Mcf;
 
 public class MconfTest {

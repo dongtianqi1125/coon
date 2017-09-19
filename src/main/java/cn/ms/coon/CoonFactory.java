@@ -14,9 +14,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.service.Mconf;
-import cn.ms.coon.service.Mlock;
-import cn.ms.coon.service.Mreg;
+import cn.ms.coon.api.Mconf;
+import cn.ms.coon.api.Mreg;
 import cn.ms.coon.support.Consts;
 
 /**
@@ -64,8 +63,6 @@ public enum CoonFactory {
 				coon = createMreg(nurl);
 			} else if (Mconf.class.getName().equals(cls.getName())) {
 				coon = createMconf(nurl);
-			} else if (Mlock.class.getName().equals(cls.getName())) {
-				coon = createMlock(nurl);
 			}
 
 			if (coon == null) {
@@ -126,19 +123,6 @@ public enum CoonFactory {
 		}
 
 		return mconf;
-	}
-
-	private Mlock createMlock(NURL nurl) {
-		logger.info("Is loading mlock center...");
-		Mlock mlock = ExtensionLoader.getLoader(Mlock.class).getExtension(nurl.getProtocol());
-		mlock.connect(nurl);
-		if (!mlock.available()) {
-			throw new IllegalStateException("No mlock center available: " + nurl);
-		} else {
-			logger.info("The mlock center started successed!");
-		}
-
-		return mlock;
 	}
 
 }

@@ -1,4 +1,4 @@
-package cn.ms.coon.service;
+package cn.ms.coon.api;
 
 import io.neural.NURL;
 import io.neural.extension.NSPI;

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.service.Mreg;
+import cn.ms.coon.api.Mreg;
 import cn.ms.coon.support.Consts;
 import cn.ms.coon.support.CoonListener;
 

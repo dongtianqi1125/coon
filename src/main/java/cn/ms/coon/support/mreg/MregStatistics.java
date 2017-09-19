@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.ms.coon.CoonFactory;
-import cn.ms.coon.service.Mreg;
+import cn.ms.coon.api.Mreg;
 
 /**
  * The Registry Statistics.

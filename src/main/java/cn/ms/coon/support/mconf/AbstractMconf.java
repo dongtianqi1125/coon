@@ -5,7 +5,7 @@ import io.neural.NURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.ms.coon.service.Mconf;
+import cn.ms.coon.api.Mconf;
 import cn.ms.coon.support.Consts;
 
 import com.alibaba.fastjson.JSON;
