@@ -1,5 +1,8 @@
 package cn.ms.coon;
 
+import io.neural.NURL;
+import io.neural.extension.ExtensionLoader;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,8 +18,6 @@ import cn.ms.coon.service.Mconf;
 import cn.ms.coon.service.Mlock;
 import cn.ms.coon.service.Mreg;
 import cn.ms.coon.support.Consts;
-import cn.ms.neural.NURL;
-import cn.ms.neural.extension.ExtensionLoader;
 
 /**
  * 分布式协调服务

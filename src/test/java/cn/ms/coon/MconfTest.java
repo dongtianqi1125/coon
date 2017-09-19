@@ -1,5 +1,7 @@
 package cn.ms.coon;
 
+import io.neural.NURL;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,6 @@ import cn.ms.coon.mconf.support.ApiParamType;
 import cn.ms.coon.mconf.support.BaseEntity;
 import cn.ms.coon.service.Mconf;
 import cn.ms.coon.support.mconf.Mcf;
-import cn.ms.neural.NURL;
 
 public class MconfTest {
 

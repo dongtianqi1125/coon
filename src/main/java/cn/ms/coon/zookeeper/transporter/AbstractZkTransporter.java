@@ -1,5 +1,7 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import io.neural.NURL;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -10,8 +12,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cn.ms.neural.NURL;
 
 public abstract class AbstractZkTransporter<TargetChildListener> implements ZkTransporter {
 

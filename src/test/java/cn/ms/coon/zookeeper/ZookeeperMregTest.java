@@ -1,12 +1,13 @@
 package cn.ms.coon.zookeeper;
 
+import io.neural.NURL;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cn.ms.coon.support.CoonListener;
-import cn.ms.neural.NURL;
 
 /**
  * ZookeeperRegistryTest

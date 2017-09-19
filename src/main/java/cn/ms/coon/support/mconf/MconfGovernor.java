@@ -1,10 +1,11 @@
 package cn.ms.coon.support.mconf;
 
+import io.neural.NURL;
+
 import java.util.Map;
 
 import cn.ms.coon.CoonFactory;
 import cn.ms.coon.service.Mconf;
-import cn.ms.neural.NURL;
 
 public class MconfGovernor {
 

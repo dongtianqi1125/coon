@@ -1,12 +1,13 @@
 package cn.ms.coon.service;
 
+import io.neural.extension.NSPI;
+
 import java.util.List;
 import java.util.Map;
 
 import cn.ms.coon.Coon;
 import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.mconf.Mcf;
-import cn.ms.neural.extension.NSPI;
 
 /**
  * The MicroService Configuration Center.<br>

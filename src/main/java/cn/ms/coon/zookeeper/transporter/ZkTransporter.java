@@ -1,10 +1,10 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import io.neural.NURL;
+import io.neural.extension.NSPI;
+
 import java.util.List;
 import java.util.Map;
-
-import cn.ms.neural.NURL;
-import cn.ms.neural.extension.NSPI;
 
 @NSPI("curator")
 public interface ZkTransporter {

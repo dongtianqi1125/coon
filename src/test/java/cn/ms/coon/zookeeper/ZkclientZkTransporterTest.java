@@ -1,10 +1,11 @@
 package cn.ms.coon.zookeeper;
 
+import io.neural.NURL;
+
 import java.util.Map;
 
 import cn.ms.coon.zookeeper.transporter.ZkTransporter.DataListener;
 import cn.ms.coon.zookeeper.transporter.ZkclientZkTransporter;
-import cn.ms.neural.NURL;
 
 public class ZkclientZkTransporterTest {
 

@@ -1,5 +1,7 @@
 package cn.ms.coon.support.mreg;
 
+import io.neural.NURL;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -12,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.support.Consts;
-import cn.ms.neural.NURL;
 
 public class MregCommon {
 	

@@ -1,5 +1,8 @@
 package cn.ms.coon.redis;
 
+import io.neural.NURL;
+import io.neural.extension.Extension;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,8 +35,6 @@ import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.coon.support.mreg.FailbackMreg;
 import cn.ms.coon.support.mreg.MregCommon;
 import cn.ms.coon.support.mreg.exception.MregException;
-import cn.ms.neural.NURL;
-import cn.ms.neural.extension.Extension;
 
 @Extension("redis")
 public class RedisMreg extends FailbackMreg {

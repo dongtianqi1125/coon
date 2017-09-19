@@ -1,5 +1,8 @@
 package cn.ms.coon.support.mreg;
 
+import io.neural.NURL;
+import io.neural.util.micro.ConcurrentHashSet;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +23,6 @@ import cn.ms.coon.support.Consts;
 import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.coon.support.mreg.exception.SkipFailbackException;
-import cn.ms.neural.NURL;
-import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 public abstract class FailbackMreg extends AbstractMreg {
 

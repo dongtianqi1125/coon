@@ -1,11 +1,12 @@
 package cn.ms.coon.support.mconf;
 
+import io.neural.NURL;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.service.Mconf;
 import cn.ms.coon.support.Consts;
-import cn.ms.neural.NURL;
 
 import com.alibaba.fastjson.JSON;
 

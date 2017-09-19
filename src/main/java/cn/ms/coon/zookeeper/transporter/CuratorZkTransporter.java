@@ -1,5 +1,9 @@
 package cn.ms.coon.zookeeper.transporter;
 
+import io.neural.NURL;
+import io.neural.extension.Extension;
+import io.neural.util.micro.ConcurrentHashSet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.ms.coon.support.Consts;
-import cn.ms.neural.NURL;
-import cn.ms.neural.extension.Extension;
-import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 @Extension("curator")
 public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> {

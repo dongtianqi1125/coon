@@ -1,5 +1,10 @@
 package cn.ms.coon.redis;
 
+import io.neural.NURL;
+import io.neural.extension.Extension;
+import io.neural.util.BeanUtils;
+import io.neural.util.micro.ConcurrentHashSet;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +27,6 @@ import cn.ms.coon.support.CoonListener;
 import cn.ms.coon.support.NamedThreadFactory;
 import cn.ms.coon.support.mconf.AbstractMconf;
 import cn.ms.coon.support.mconf.Mcf;
-import cn.ms.neural.NURL;
-import cn.ms.neural.extension.Extension;
-import cn.ms.neural.util.BeanUtils;
-import cn.ms.neural.util.micro.ConcurrentHashSet;
 
 /**
  * The base of Redis Mconf.

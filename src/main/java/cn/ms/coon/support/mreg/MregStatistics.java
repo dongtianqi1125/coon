@@ -1,5 +1,7 @@
 package cn.ms.coon.support.mreg;
 
+import io.neural.NURL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +11,6 @@ import java.util.Set;
 
 import cn.ms.coon.CoonFactory;
 import cn.ms.coon.service.Mreg;
-import cn.ms.neural.NURL;
 
 /**
  * The Registry Statistics.

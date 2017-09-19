@@ -2,6 +2,7 @@ package cn.ms.coon.redis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import io.neural.NURL;
 
 import java.util.Set;
 
@@ -10,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cn.ms.coon.support.CoonListener;
-import cn.ms.neural.NURL;
 
 /**
  * RedisRegistryTest

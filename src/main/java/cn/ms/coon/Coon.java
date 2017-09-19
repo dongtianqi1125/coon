@@ -1,6 +1,6 @@
 package cn.ms.coon;
 
-import cn.ms.neural.NURL;
+import io.neural.NURL;
 
 /**
  * 分布式协调服务
