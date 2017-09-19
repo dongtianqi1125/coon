@@ -2,7 +2,7 @@ package cn.ms.coon.zookeeper.transporter;
 
 import io.neural.NURL;
 import io.neural.extension.Extension;
-import io.neural.util.micro.ConcurrentHashSet;
+import io.neural.util.ConcurrentHashSet;
 
 import java.util.ArrayList;
 import java.util.List;

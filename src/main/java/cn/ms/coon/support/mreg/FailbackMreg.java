@@ -1,7 +1,7 @@
 package cn.ms.coon.support.mreg;
 
 import io.neural.NURL;
-import io.neural.util.micro.ConcurrentHashSet;
+import io.neural.util.ConcurrentHashSet;
 
 import java.util.HashMap;
 import java.util.HashSet;

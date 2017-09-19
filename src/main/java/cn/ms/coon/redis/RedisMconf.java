@@ -2,8 +2,8 @@ package cn.ms.coon.redis;
 
 import io.neural.NURL;
 import io.neural.extension.Extension;
-import io.neural.util.BeanUtils;
-import io.neural.util.micro.ConcurrentHashSet;
+import io.neural.util.Beans;
+import io.neural.util.ConcurrentHashSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class RedisMconf extends AbstractMconf {
 		if (parameters != null) {
 			if (!parameters.isEmpty()) {
 				try {
-					BeanUtils.copyProperties(config, nurl.getParameters());
+					Beans.copyProperties(config, nurl.getParameters());
 				} catch (Exception e) {
 					logger.error("The copy properties exception.", e);
 				}
