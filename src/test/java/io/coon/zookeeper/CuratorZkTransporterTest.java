@@ -11,7 +11,7 @@ public class CuratorZkTransporterTest {
 	public static void main(String[] args) {
 		try {
 			CuratorZkTransporter transporter = new CuratorZkTransporter();
-			transporter.connect(NURL.valueOf("zookeeper://127.0.0.1:2181"));
+			transporter.connect(NURL.valueOf("zookeeper://127.0.0.1:2181?group=mconf"));
 			
 			String path = "/mconf/gateway/router";
 			transporter.addDataListener(path, new DataListener() {
@@ -21,9 +21,11 @@ public class CuratorZkTransporterTest {
 				}
 			});
 			
-			transporter.createData(path+"/url1", "a123456789");
+			Thread.sleep(2000);
 			
-			Thread.sleep(5000);
+			transporter.createData(path+"/url4", "dddd"+System.currentTimeMillis());
+			
+			Thread.sleep(2000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

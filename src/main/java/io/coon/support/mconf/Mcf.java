@@ -1,5 +1,6 @@
 package io.coon.support.mconf;
 
+import io.coon.support.Consts;
 import io.neural.NURL;
 
 import java.io.UnsupportedEncodingException;
@@ -15,12 +16,15 @@ import java.util.Map;
 public class Mcf {
 
 	public static final String ROOT_KEY = "root";
-	public static final String NODE_KEY = "node";
+	
 	public static final String APP_KEY = "app";
+	public static final String NODE_KEY = "node";
+	
+	public static final String CONF_KEY = "conf";
 	public static final String ENV_KEY = "env";
 	public static final String GROUP_KEY = "group";
 	public static final String VERSION_KEY = "version";
-	public static final String CONF_KEY = "conf";
+	
 	public static final String DATA_KEY = "data";
 
 	// 第一层
@@ -43,9 +47,15 @@ public class Mcf {
 	String data;// 必须
 	Map<String, String> dataAttrs = new HashMap<String, String>();
 
+	private Mcf() {}
+	
+	public static Mcf builder() {
+		return new Mcf();
+	}
+	
 	// build root
 	public Mcf buildRoot(NURL url) {
-		String root = url.getPath();
+		String root = url.getParameter(Consts.GROUP_KEY, "mconf");
 		if (AbstractMconf.isNotBlank(root)) {
 			this.setRoot(root);
 		}
@@ -350,7 +360,7 @@ public class Mcf {
 
 	@Override
 	public String toString() {
-		return "Cmd [root=" + root + ", rootAttrs=" + rootAttrs + ", node="
+		return "Mcf [root=" + root + ", rootAttrs=" + rootAttrs + ", node="
 				+ node + ", app=" + app + ", appAttrs=" + appAttrs + ", env="
 				+ env + ", conf=" + conf + ", confAttrs=" + confAttrs
 				+ ", group=" + group + ", version=" + version + ", data="

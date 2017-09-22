@@ -304,17 +304,27 @@ public class CuratorZkTransporter extends AbstractZkTransporter<CuratorWatcher> 
 					if(!completeInit){// 没有初始化成功前,不进行变更通知操作
 						return;
 					}
-					ChildData data = event.getData();
-					if(data!=null){
+					ChildData childData = event.getData();
+					if(childData!=null){
+						String data = new String(childData.getData(), "UTF-8");
+						logger.debug(String.format("ZK-Curator Path[%s] change[EventType: %s] data[%s]", this.path, event.getType(), data));
+						
 						switch (event.getType()) {  
 		                case CHILD_REMOVED:
-		                	childrenDataMap.remove(data.getPath());
+		                	childrenDataMap.remove(childData.getPath());
+		                	this.doNotify();// 数据删除,开始广播最新列表
+		                    break;
+		                case CHILD_ADDED:// Added动作通知IP地址,而非配置数据
+		                	childrenDataMap.remove(childData.getPath());
+		                    break;
+		                case CHILD_UPDATED:
+		                	childrenDataMap.put(childData.getPath(), data);
+		                	this.doNotify();// 数据更新,开始广播最新列表
 		                    break;
 		                default:
-		                	childrenDataMap.put(data.getPath(), new String(data.getData(), "UTF-8"));
+		                	logger.debug("ZK-Curator is unknown action: {}", event.getType().toString());
 		                    break;  
 		                }
-						this.doNotify();// 每次数据变更,广播最新列表
 					}
 				}
 			}
