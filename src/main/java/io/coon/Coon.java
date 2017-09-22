@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author lry
  */
-public enum CoonFactory {
+public enum Coon {
 
 	CF;
 	
-	private static final Logger logger = LoggerFactory.getLogger(CoonFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(Coon.class);
 
 	private final ReentrantLock LOCK = new ReentrantLock();
 	private final Map<String, CoonService> COON_MAP = new ConcurrentHashMap<String, CoonService>();

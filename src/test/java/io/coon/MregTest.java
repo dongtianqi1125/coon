@@ -1,6 +1,6 @@
 package io.coon;
 
-import io.coon.CoonFactory;
+import io.coon.Coon;
 import io.coon.api.Mreg;
 import io.coon.support.mreg.MregGovernor;
 import io.neural.NURL;
@@ -12,7 +12,7 @@ public class MregTest {
 	public static void main(String[] args) {
 		try {
 			NURL nurl = NURL.valueOf("zookeeper://127.0.0.1:2181?session=5000");
-			Mreg mreg = CoonFactory.CF.getCoon(nurl, Mreg.class);
+			Mreg mreg = Coon.CF.getCoon(nurl, Mreg.class);
 			mreg.connect(nurl);
 			
 			mreg.register(NURL.valueOf("ms://10.14.23.42:8080/cn.ms.coon.UserService?application=gateway&version=1.0.0&group=weixin&category=providers"));

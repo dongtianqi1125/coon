@@ -1,6 +1,6 @@
 package io.coon.support.mconf;
 
-import io.coon.CoonFactory;
+import io.coon.Coon;
 import io.coon.api.Mconf;
 import io.neural.NURL;
 
@@ -21,7 +21,7 @@ public class MconfGovernor {
 	public static void main(String[] args) {
 		try {
 			NURL nurl = NURL.valueOf("zookeeper://127.0.0.1:2181/mconf?session=5000");
-			Mconf mconf = CoonFactory.CF.getCoon(nurl, Mconf.class);
+			Mconf mconf = Coon.CF.getCoon(nurl, Mconf.class);
 			mconf.connect(nurl);
 			System.out.println(mconf);
 			MconfGovernor governor = new MconfGovernor(mconf);

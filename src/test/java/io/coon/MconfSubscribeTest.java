@@ -14,7 +14,7 @@ public class MconfSubscribeTest {
 	public static void main(String[] args) {
 		try {
 			NURL nurl = NURL.valueOf("zookeeper://127.0.0.1:2181?session=5000");
-			Mconf mconf = CoonFactory.CF.getCoon(nurl, Mconf.class);
+			Mconf mconf = Coon.CF.getCoon(nurl, Mconf.class);
 			Mcf mcf = Mcf.builder().buildApp("node01", "ms-gateway").buildConf("test", "S01", "1.0", "parameter");
 			mconf.subscribe(mcf, ParameterEntity.class, new CoonListener<ParameterEntity>() {
 				@Override

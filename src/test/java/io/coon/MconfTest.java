@@ -1,6 +1,6 @@
 package io.coon;
 
-import io.coon.CoonFactory;
+import io.coon.Coon;
 import io.coon.api.Mconf;
 import io.coon.mconf.ApiEntity;
 import io.coon.mconf.ConsumerEntity;
@@ -28,7 +28,7 @@ public class MconfTest {
 	public MconfTest() {
 		try {
 			NURL nurl = NURL.valueOf("zookeeper://127.0.0.1:2181/mconf?session=5000");
-			mconf = CoonFactory.CF.getCoon(nurl, Mconf.class);
+			mconf = Coon.CF.getCoon(nurl, Mconf.class);
 			mconf.connect(nurl);
 			System.out.println(mconf);
 		} catch (Exception e) {

@@ -1,6 +1,6 @@
 package io.coon.support.mreg;
 
-import io.coon.CoonFactory;
+import io.coon.Coon;
 import io.coon.api.Mreg;
 import io.neural.NURL;
 
@@ -71,7 +71,7 @@ public class MregStatistics {
 	public static Map<String, Object> getRegistries(NURL url) {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 
-		Collection<Mreg> mregs = CoonFactory.CF.getCoons(Mreg.class);
+		Collection<Mreg> mregs = Coon.CF.getCoons(Mreg.class);
 		int registeredCount = 0;
 		int subscribedCount = 0;
 		if (mregs != null && mregs.size() > 0) {
@@ -118,7 +118,7 @@ public class MregStatistics {
 
 		// 获取所有的注册中心地址
 		Mreg mreg = null;
-		Collection<Mreg> mregs = CoonFactory.CF.getCoons(Mreg.class);
+		Collection<Mreg> mregs = Coon.CF.getCoons(Mreg.class);
 		if (mregs != null && mregs.size() > 0) {
 			List<String> registryList = new ArrayList<String>();
 			for (Mreg r : mregs) {
@@ -157,7 +157,7 @@ public class MregStatistics {
 		String registryAddress = url.getParameter("registry", "");
 
 		Mreg mreg = null;
-		Collection<Mreg> mregs = CoonFactory.CF.getCoons(Mreg.class);
+		Collection<Mreg> mregs = Coon.CF.getCoons(Mreg.class);
 		if (mregs != null && mregs.size() > 0) {
 			List<String> registryList = new ArrayList<String>();
 			for (Mreg r : mregs) {
