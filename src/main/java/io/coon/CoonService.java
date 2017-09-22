@@ -7,7 +7,7 @@ import io.neural.NURL;
  * 
  * @author lry
  */
-public interface Coon {
+public interface CoonService {
 
 	NURL getNurl();
 

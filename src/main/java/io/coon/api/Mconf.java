@@ -1,6 +1,6 @@
 package io.coon.api;
 
-import io.coon.Coon;
+import io.coon.CoonService;
 import io.coon.support.CoonListener;
 import io.coon.support.mconf.Mcf;
 import io.neural.extension.NSPI;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author lry
  */
 @NSPI("zookeeper")
-public interface Mconf extends Coon {
+public interface Mconf extends CoonService {
 
 	void publish(Mcf mcf, Object obj);
 

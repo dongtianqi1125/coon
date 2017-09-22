@@ -29,16 +29,16 @@ public enum CoonFactory {
 	private static final Logger logger = LoggerFactory.getLogger(CoonFactory.class);
 
 	private final ReentrantLock LOCK = new ReentrantLock();
-	private final Map<String, Coon> COON_MAP = new ConcurrentHashMap<String, Coon>();
+	private final Map<String, CoonService> COON_MAP = new ConcurrentHashMap<String, CoonService>();
 
-	public <T> Collection<Coon> getCoons() {
+	public <T> Collection<CoonService> getCoons() {
 		return Collections.unmodifiableCollection(COON_MAP.values());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Collection<T> getCoons(Class<T> cls) {
 		List<T> list = new ArrayList<T>();
-		for (Coon coon : COON_MAP.values()) {
+		for (CoonService coon : COON_MAP.values()) {
 			if (coon.getClass().getName().equals(cls.getName())) {
 				list.add((T) coon);
 			}
@@ -53,7 +53,7 @@ public enum CoonFactory {
 
 		LOCK.lock();
 		try {
-			Coon coon = COON_MAP.get(key);
+			CoonService coon = COON_MAP.get(key);
 			if (coon != null) {
 				return (T) coon;
 			}
@@ -85,7 +85,7 @@ public enum CoonFactory {
 
 		LOCK.lock();
 		try {
-			for (Coon coon : getCoons()) {
+			for (CoonService coon : getCoons()) {
 				try {
 					coon.destroy();
 				} catch (Throwable e) {

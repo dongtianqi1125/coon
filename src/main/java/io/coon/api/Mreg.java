@@ -1,6 +1,6 @@
 package io.coon.api;
 
-import io.coon.Coon;
+import io.coon.CoonService;
 import io.coon.support.CoonListener;
 import io.neural.NURL;
 import io.neural.extension.NSPI;
@@ -21,7 +21,7 @@ import java.util.List;
  * @author lry
  */
 @NSPI("zookeeper")
-public interface Mreg extends Coon {
+public interface Mreg extends CoonService {
 	
     /**
      * 注册数据，比如：提供者地址，消费者地址，路由规则，覆盖规则，等数据。
