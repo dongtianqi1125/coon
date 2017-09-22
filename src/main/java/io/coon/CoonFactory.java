@@ -28,15 +28,15 @@ public enum CoonFactory {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CoonFactory.class);
 
-	private static final ReentrantLock LOCK = new ReentrantLock();
-	private static final Map<String, Coon> COON_MAP = new ConcurrentHashMap<String, Coon>();
+	private final ReentrantLock LOCK = new ReentrantLock();
+	private final Map<String, Coon> COON_MAP = new ConcurrentHashMap<String, Coon>();
 
-	public static <T> Collection<Coon> getCoons() {
+	public <T> Collection<Coon> getCoons() {
 		return Collections.unmodifiableCollection(COON_MAP.values());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getCoons(Class<T> cls) {
+	public <T> Collection<T> getCoons(Class<T> cls) {
 		List<T> list = new ArrayList<T>();
 		for (Coon coon : COON_MAP.values()) {
 			if (coon.getClass().getName().equals(cls.getName())) {
@@ -78,7 +78,7 @@ public enum CoonFactory {
 		}
 	}
 
-	public static void destroyMregAll() {
+	public void destroyMregAll() {
 		if (logger.isInfoEnabled()) {
 			logger.info("Close all coons " + getCoons());
 		}
