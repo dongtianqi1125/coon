@@ -5,7 +5,7 @@ import io.coon.support.Consts;
 import io.coon.support.CoonListener;
 import io.coon.support.NamedThreadFactory;
 import io.neural.NURL;
-import io.neural.util.ConcurrentHashSet;
+import io.neural.micro.ConcurrentHashSet;
 
 import java.io.File;
 import java.io.FileInputStream;

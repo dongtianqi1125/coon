@@ -6,8 +6,8 @@ import io.coon.support.mconf.AbstractMconf;
 import io.coon.support.mconf.Mcf;
 import io.neural.NURL;
 import io.neural.extension.Extension;
-import io.neural.util.Beans;
-import io.neural.util.ConcurrentHashSet;
+import io.neural.micro.Beans;
+import io.neural.micro.ConcurrentHashSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;

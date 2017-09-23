@@ -1,6 +1,5 @@
 package io.coon;
 
-import io.coon.Coon;
 import io.coon.api.Mreg;
 import io.coon.support.mreg.MregGovernor;
 import io.neural.NURL;

@@ -1,6 +1,5 @@
 package io.coon;
 
-import io.coon.Coon;
 import io.coon.api.Mconf;
 import io.coon.mconf.ApiEntity;
 import io.coon.mconf.ConsumerEntity;

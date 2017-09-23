@@ -1,7 +1,6 @@
 package io.coon.zookeeper;
 
 import io.coon.support.CoonListener;
-import io.coon.zookeeper.ZookeeperMreg;
 import io.neural.NURL;
 
 import org.junit.Assert;

@@ -3,7 +3,7 @@ package io.coon.zookeeper.transporter;
 import io.coon.support.Consts;
 import io.neural.NURL;
 import io.neural.extension.Extension;
-import io.neural.util.ConcurrentHashSet;
+import io.neural.micro.ConcurrentHashSet;
 
 import java.util.ArrayList;
 import java.util.List;

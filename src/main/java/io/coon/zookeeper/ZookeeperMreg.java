@@ -11,7 +11,7 @@ import io.coon.zookeeper.transporter.ZkTransporter.StateListener;
 import io.neural.NURL;
 import io.neural.extension.Extension;
 import io.neural.extension.ExtensionLoader;
-import io.neural.util.ConcurrentHashSet;
+import io.neural.micro.ConcurrentHashSet;
 
 import java.util.ArrayList;
 import java.util.List;

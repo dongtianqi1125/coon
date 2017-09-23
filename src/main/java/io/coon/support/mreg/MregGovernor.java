@@ -4,7 +4,7 @@ import io.coon.api.Mreg;
 import io.coon.support.Consts;
 import io.coon.support.CoonListener;
 import io.neural.NURL;
-import io.neural.util.ConcurrentHashSet;
+import io.neural.micro.ConcurrentHashSet;
 
 import java.util.HashMap;
 import java.util.List;

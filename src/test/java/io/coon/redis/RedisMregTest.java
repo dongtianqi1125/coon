@@ -2,7 +2,6 @@ package io.coon.redis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import io.coon.redis.RedisMreg;
 import io.coon.support.CoonListener;
 import io.neural.NURL;
 
