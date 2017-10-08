@@ -1,12 +1,12 @@
 package io.coon.zookeeper.transporter;
 
 import io.neural.NURL;
-import io.neural.extension.NSPI;
+import io.neural.extension.NPI;
 
 import java.util.List;
 import java.util.Map;
 
-@NSPI("curator")
+@NPI("curator")
 public interface ZkTransporter {
 
 	void connect(NURL nurl);

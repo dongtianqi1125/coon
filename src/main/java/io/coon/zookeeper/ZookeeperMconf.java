@@ -9,7 +9,7 @@ import io.coon.zookeeper.transporter.ZkTransporter.DataListener;
 import io.neural.NURL;
 import io.neural.extension.Extension;
 import io.neural.extension.ExtensionLoader;
-import io.neural.extension.NSPI;
+import io.neural.extension.NPI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,8 +40,8 @@ public class ZookeeperMconf extends AbstractMconf {
 	@Override
 	public void connect(NURL nurl) {
 		super.connect(nurl);
-		NSPI nspi = ZkTransporter.class.getAnnotation(NSPI.class);
-		String transporter = nurl.getParameter(Consts.TRANSPORTER_KEY, nspi.value());
+		NPI npi = ZkTransporter.class.getAnnotation(NPI.class);
+		String transporter = nurl.getParameter(Consts.TRANSPORTER_KEY, npi.value());
 		this.transporter = ExtensionLoader.getLoader(ZkTransporter.class).getExtension(transporter);
 		this.transporter.connect(nurl);
 	}

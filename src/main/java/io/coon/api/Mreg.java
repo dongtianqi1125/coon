@@ -3,7 +3,7 @@ package io.coon.api;
 import io.coon.CoonService;
 import io.coon.support.CoonListener;
 import io.neural.NURL;
-import io.neural.extension.NSPI;
+import io.neural.extension.NPI;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * @author lry
  */
-@NSPI("zookeeper")
+@NPI("zookeeper")
 public interface Mreg extends CoonService {
 	
     /**
